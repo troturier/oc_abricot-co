@@ -32,6 +32,14 @@ describe("sortByUrgency", () => {
     ]);
   });
 
+  it("keeps the creation order between otherwise equal tasks", () => {
+    const tasks = [
+      makeTask({ id: "second", dueDate: null, createdAt: "2026-01-02T00:00:00.000Z" }),
+      makeTask({ id: "first", dueDate: null, createdAt: "2026-01-01T00:00:00.000Z" }),
+    ];
+    expect(sortByUrgency(tasks).map((task) => task.id)).toEqual(["first", "second"]);
+  });
+
   it("does not mutate its input", () => {
     const tasks = [makeTask({ id: "b", dueDate: null }), makeTask({ id: "a" })];
     sortByUrgency(tasks);

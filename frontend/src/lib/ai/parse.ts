@@ -2,8 +2,11 @@ import * as z from "zod";
 import { MAX_GENERATED_TASKS } from "./prompt";
 import type { GeneratedTask } from "./types";
 
+/** "définir les règles" → "Définir les règles". */
+const capitalize = (value: string) => value.charAt(0).toLocaleUpperCase("fr-FR") + value.slice(1);
+
 const generatedTaskSchema = z.object({
-  title: z.string().trim().min(2).max(200),
+  title: z.string().trim().min(2).max(200).transform(capitalize),
   description: z.string().trim().max(1000).default(""),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).catch("MEDIUM").default("MEDIUM"),
 });

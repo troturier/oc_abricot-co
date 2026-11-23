@@ -20,8 +20,8 @@
     "test:coverage": "vitest run --project unit --project integration --coverage"
   },
   "dependencies": {
-    "@llamaindex/mistral": "^0.1.23",
-    "llamaindex": "^0.12.1",
+    "@llamaindex/mistral": "0.1.22",
+    "llamaindex": "0.12.1",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",

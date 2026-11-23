@@ -4,8 +4,8 @@ This document lists, step by step, what was checked to make sure each step of th
 done, and how to re-run the checks. Every automated check can be replayed at any time to detect
 regressions (see [Re-running everything](#re-running-everything)).
 
-Last full run: **2026-11-23** — lint ✅, typecheck ✅, Prettier ✅, 89 unit/integration tests ✅,
-27 end-to-end tests ✅. AI quality evaluation with the real Mistral model: ⏳ pending (needs an API key, see step 6).
+Last full run: **2026-11-23** — lint ✅, typecheck ✅, Prettier ✅, 91 unit/integration tests ✅,
+27 end-to-end tests ✅, AI quality evaluation with the real Mistral model ✅ (3/3). Remaining: WAVE run ⏳.
 
 Legend: ✅ verified · ⏳ pending · ⚠️ deviation, explained.
 
@@ -28,7 +28,7 @@ cd frontend && npm install && npx playwright install chromium && npm run test:al
 | `npm run lint`           | ESLint (Next.js core-web-vitals + TypeScript rules, includes `jsx-a11y` rules)                                                                                                     | ~5 s              |
 | `npm run typecheck`      | TypeScript strict mode, typed routes                                                                                                                                               | ~10 s             |
 | `npm run format:check`   | Prettier                                                                                                                                                                           | ~3 s              |
-| `npm test`               | 89 Vitest tests: `unit` project (jsdom) + `integration` project (Node, MSW-mocked backend)                                                                                         | ~3 s              |
+| `npm test`               | 91 Vitest tests: `unit` project (jsdom) + `integration` project (Node, MSW-mocked backend)                                                                                         | ~3 s              |
 | `npm run test:coverage`  | Same with V8 coverage report in `coverage/`                                                                                                                                        | ~5 s              |
 | `npm run test:e2e`       | 27 Playwright tests: starts the **real backend** on a fresh seeded SQLite database (`backend/prisma/e2e.sqlite`, port 8010) and a **production build** of the frontend (port 3010) | ~1 min with build |
 | `npm run test:ai`        | Prompt quality evaluation on the **real Mistral API** (skipped without `MISTRAL_API_KEY`)                                                                                          | ~30 s             |
@@ -257,18 +257,43 @@ Pipeline (`frontend/src/lib/ai/`, called by the `generateTasks` Server Action):
 
 Security: the Mistral key is only read on the server (`MISTRAL_API_KEY`, no `NEXT_PUBLIC_` prefix, `server-only` modules, `.env.local` ignored by Git); rate limit of 10 generations per minute and per user; errors mapped to clear messages (missing/invalid key, quota 429, outage) without technical details.
 
-| Check                                                                                                                                           | Result                                              |
-| ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| Retrieval returns the closest tasks (real LlamaIndex index with a deterministic embedding)                                                      | ✅ integration `ai.test.ts`                         |
-| The retrieved tasks are in the prompt sent to the model (RAG)                                                                                   | ✅ integration                                      |
-| Output parsing: fences, prose, invalid items, duplicates, cap, retry, final failure                                                             | ✅ unit `parse.test.ts` + integration               |
-| Errors: quota (429), invalid key (401), outage, missing key, non-member (403), invalid prompt, rate limit                                       | ✅ unit + integration                               |
-| Saving: tasks created in the current project, in order; empty list or untitled task refused                                                     | ✅ integration                                      |
-| Modal: generate, delete, edit, save; error shown in an alert; accessible                                                                        | ✅ component test `AiTaskModal.test.tsx`            |
-| Full flow in the browser (real backend, fake deterministic model): generate 3 → delete 1 → edit 1 → add → tasks visible in the project          | ✅ e2e `ai.spec.ts`                                 |
-| Loading state while the model answers (spinner + `aria-live` message, prompt disabled)                                                          | ✅ component test                                   |
-| **Relevance with the real Mistral model** (`npm run test:ai`: 3 scenarios — format, French, no duplicate of the RAG context, expected keywords) | ⏳ needs `MISTRAL_API_KEY` in `frontend/.env.local` |
-| **Manual test with the real model** in the app                                                                                                  | ⏳ needs the key                                    |
+| Check                                                                                                                                               | Result                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Retrieval returns the closest tasks (real LlamaIndex index with a deterministic embedding)                                                          | ✅ integration `ai.test.ts`                                                              |
+| The retrieved tasks are in the prompt sent to the model (RAG)                                                                                       | ✅ integration                                                                           |
+| Output parsing: fences, prose, invalid items, duplicates, cap, retry, final failure                                                                 | ✅ unit `parse.test.ts` + integration                                                    |
+| Errors: quota (429), invalid key (401), outage, missing key, non-member (403), invalid prompt, rate limit                                           | ✅ unit + integration                                                                    |
+| Saving: tasks created in the current project, in order; empty list or untitled task refused                                                         | ✅ integration                                                                           |
+| Modal: generate, delete, edit, save; error shown in an alert; accessible                                                                            | ✅ component test `AiTaskModal.test.tsx`                                                 |
+| Full flow in the browser (real backend, fake deterministic model): generate 3 → delete 1 → edit 1 → add → tasks visible in the project              | ✅ e2e `ai.spec.ts`                                                                      |
+| Loading state while the model answers (spinner + `aria-live` message, prompt disabled)                                                              | ✅ component test                                                                        |
+| **Relevance with the real Mistral model** (`npm run test:ai`: 3 scenarios — format, French, no duplicate of the RAG context, expected keywords)     | ✅ 3/3 on 2026-11-23 (sample output below)                                               |
+| **Manual test with the real model** in the app (E-commerce project, prompt « Mettre en place un programme de fidélité avec points et codes promo ») | ✅ loading state shown, 5 relevant tasks in ~8 s, 5 tasks saved, toast, no console error |
+
+### Results with the real model (2026-11-23)
+
+Sample of `npm run test:ai` (`mistral-small-latest`, `mistral-embed`):
+
+| Scenario                                                                         | RAG context retrieved                                                             | Generated tasks (titles)                                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| E-commerce — « Gérer les remboursements et les factures après un paiement »      | Intégrer le paiement Stripe · Concevoir la base de données · Créer la page panier | Configurer l'API de remboursement Stripe · Automatiser la génération des factures · Ajouter une section « Historique des remboursements » dans le compte utilisateur · Mettre en place un système de notifications pour les remboursements |
+| Training platform — « Ajouter des badges et un tableau de suivi de progression » | Créer le système de quiz · Développer le lecteur vidéo                            | Définir les critères d'obtention des badges · Créer les badges visuels · Intégrer les badges au système de progression · Développer le tableau de suivi de progression · Tester l'affichage des badges et du tableau                       |
+| Empty project — « Créer le site de A à Z »                                       | (none)                                                                            | 8 tasks from needs analysis to deployment, in a logical order                                                                                                                                                                              |
+
+The tasks are in French, actionable, ordered, consistent with the existing tasks (Stripe is reused
+for refunds, badges are linked to the existing quizzes and videos) and never duplicate them.
+
+Issues found while testing with the real model, and fixed:
+
+- **Duplicated LlamaIndex internals**: `@llamaindex/mistral@0.1.23` required `@llamaindex/core` 0.6.23 while
+  `llamaindex@0.12.1` ships 0.6.22, so two copies were loaded ("llamaindex was already imported. This breaks
+  constructor checks"). Both packages are now pinned to aligned versions (`llamaindex` 0.12.1,
+  `@llamaindex/mistral` 0.1.22); `npm ls @llamaindex/core` shows a single version.
+- **Lowercase titles** sometimes returned by the model → titles are capitalized by the parser (unit test).
+- **Order of the saved tasks**: tasks without due date were shown in reverse creation order, because
+  `Infinity - Infinity` is `NaN` in the sort → safe numeric comparison and creation date as last tie-break (unit tests).
+- `npm run test:ai` skipped the suite: Vitest sets `NODE_ENV=test`, and the Next.js env loader then ignores
+  `.env.local` on purpose → the evaluation setup loads `.env.local` itself.
 
 ---
 
@@ -282,7 +307,7 @@ Security: the Mistral key is only read on the server (`MISTRAL_API_KEY`, no `NEX
 | No error on the site nor in the console                                                                                          | Step 5 › Console                                                                                                |
 | Secure authentication                                                                                                            | Step 4                                                                                                          |
 | Clean, organized, well-named, commented code                                                                                     | Lint + Prettier + typecheck; comments explain the non-obvious choices (backend quirks, security, accessibility) |
-| AI feature works; secure LLM connection; existing tasks in the RAG context; relevant tasks                                       | Step 6 (relevance with the real model ⏳)                                                                       |
+| AI feature works; secure LLM connection; existing tasks in the RAG context; relevant tasks                                       | Step 6                                                                                                          |
 | Project creation/edition; task creation/edition                                                                                  | Step 5 › Features                                                                                               |
 | Sign up, log in, change password                                                                                                 | Step 4                                                                                                          |
 | Anyone can create a project and becomes its administrator; only members see it and manage its tasks; only administrators edit it | Step 5 › Features (e2e as Alice, Bob, Caroline)                                                                 |

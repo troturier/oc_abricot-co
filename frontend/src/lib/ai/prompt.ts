@@ -15,7 +15,7 @@ Règles :
 - Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format :
   {"tasks":[{"title":"...","description":"...","priority":"LOW|MEDIUM|HIGH|URGENT"}]}
 - Entre 1 et ${MAX_GENERATED_TASKS} tâches, dans l'ordre logique de réalisation.
-- "title" : action courte commençant par un verbe à l'infinitif (2 à 80 caractères).
+- "title" : action courte commençant par une majuscule et un verbe à l'infinitif (2 à 80 caractères).
 - "description" : une ou deux phrases qui précisent le résultat attendu (300 caractères maximum).
 - N'inclus pas une tâche déjà présente dans les tâches existantes (même sous un autre nom) : complète-les.
 - Reprends le vocabulaire et le niveau de détail des tâches existantes.

@@ -24,6 +24,12 @@ describe("parseGeneratedTasks", () => {
     expect(result).toHaveLength(MAX_GENERATED_TASKS);
   });
 
+  it("capitalizes the titles", () => {
+    expect(parseGeneratedTasks('{"tasks":[{"title":"écrire les tests"}]}')[0].title).toBe(
+      "Écrire les tests",
+    );
+  });
+
   it("rejects answers without usable tasks", () => {
     expect(() => parseGeneratedTasks("Je ne peux pas répondre.")).toThrow();
     expect(() => parseGeneratedTasks('{"tasks":[]}')).toThrow();
