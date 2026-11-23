@@ -13,15 +13,49 @@ Legend: ✅ verified · ⏳ pending · ⚠️ deviation, explained.
 
 ## Re-running everything
 
+The automated checks do **not** need the development servers: the end-to-end tests start their own
+backend and frontend on dedicated ports. One command is enough:
+
 ```bash
-# Terminal 1 — backend (development database)
-cd backend && npm install && npx prisma generate && npx prisma migrate deploy && npm run seed && npm run dev
+# Every frontend check (lint, types, unit, integration, end-to-end)
+cd backend && npm install && npx prisma generate && cd ../frontend && npm install && npx playwright install chromium && npm run test:all
+```
+
+The development servers are only needed to use the application by hand:
+
+```bash
+# Terminal 1 — backend on http://localhost:8000 (development database)
+cd backend && npx prisma migrate deploy && npm run seed && npm run dev
 ```
 
 ```bash
-# Terminal 2 — every frontend check (lint, types, unit, integration, end-to-end)
-cd frontend && npm install && npx playwright install chromium && npm run test:all
+# Terminal 2 — frontend on http://localhost:3001
+cd frontend && npm run dev
 ```
+
+| Port | Used by                                                     | Override                                                                               |
+| ---- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 8000 | development backend (`backend`, `npm run dev`)              | `PORT=8001 npm run dev`, then `API_URL=http://localhost:8001` in `frontend/.env.local` |
+| 3001 | development frontend (`frontend`, `npm run dev`)            | `npx next dev --port 3002`                                                             |
+| 8010 | backend started by `npm run test:e2e` (throw-away database) | `E2E_BACKEND_PORT=8020 npm run test:e2e`                                               |
+| 3010 | production frontend started by `npm run test:e2e`           | `E2E_FRONTEND_PORT=3020 npm run test:e2e`                                              |
+
+### "address already in use" (`EADDRINUSE`)
+
+Another process already listens on the port, usually a server started earlier and not stopped
+(a forgotten terminal, an interrupted run). Find it, then stop it or use another port (table above):
+
+```bash
+ss -ltnp | grep -E ':(8000|3001|8010|3010)\b'
+```
+
+```bash
+kill <pid>
+```
+
+Playwright refuses to start when 8010 or 3010 is taken (`… is already used, make sure that nothing is
+running on the port/url`): it never reuses a server, so that the tests always run on a fresh database
+and a fresh build.
 
 | Command (in `frontend/`) | What it checks                                                                                                                                                                     | Duration          |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
@@ -33,7 +67,7 @@ cd frontend && npm install && npx playwright install chromium && npm run test:al
 | `npm run test:e2e`       | 27 Playwright tests: starts the **real backend** on a fresh seeded SQLite database (`backend/prisma/e2e.sqlite`, port 8010) and a **production build** of the frontend (port 3010) | ~1 min with build |
 | `npm run test:ai`        | Prompt quality evaluation on the **real Mistral API** (skipped without `MISTRAL_API_KEY`)                                                                                          | ~30 s             |
 
-The end-to-end tests never touch the development database and can run while `npm run dev` is up.
+The end-to-end tests never touch the development database and can run while `npm run dev` is up (different ports).
 
 ---
 

@@ -1,7 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const BACKEND_PORT = 8010;
-const FRONTEND_PORT = 3010;
+// Dedicated ports, distinct from the development servers (8000 and 3001), so that the
+// tests can run while `npm run dev` is up. Override them if they are already taken:
+// E2E_BACKEND_PORT=8020 E2E_FRONTEND_PORT=3020 npm run test:e2e
+const BACKEND_PORT = Number(process.env.E2E_BACKEND_PORT ?? 8010);
+const FRONTEND_PORT = Number(process.env.E2E_FRONTEND_PORT ?? 3010);
 
 /**
  * End-to-end tests: the real backend (fresh seeded database) and a production
