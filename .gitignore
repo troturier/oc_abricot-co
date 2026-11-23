@@ -1,11 +1,20 @@
 node_modules
 # Keep environment variables out of version control
 .env
+.env.local
 
 /generated/prisma
 
-# Base de données
+# Database
 *.db
 *.sqlite
 *.sqlite3
-dev.db
+*.sqlite-journal
+
+# AI working files (never versioned)
+CLAUDE.md
+AGENTS.md
+JOURNAL.md
+ETAT.md
+PLAN.md
+.claude/
