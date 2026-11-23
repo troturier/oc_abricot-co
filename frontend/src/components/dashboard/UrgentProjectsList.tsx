@@ -34,7 +34,10 @@ export function UrgentProjectsList({ projects }: { projects: ProjectWithTasks[] 
                 <article className="flex flex-col gap-4 rounded-card border border-gray-200 px-6 py-[25px] sm:px-10">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <h3 className="font-heading text-lg font-semibold">
-                      <Link href={`/projects/${project.id}`} className="hover:text-brand-strong hover:underline">
+                      <Link
+                        href={`/projects/${project.id}`}
+                        className="hover:text-brand-strong hover:underline"
+                      >
                         {project.name}
                       </Link>
                     </h3>
@@ -46,15 +49,24 @@ export function UrgentProjectsList({ projects }: { projects: ProjectWithTasks[] 
                     <p className="flex items-center gap-2 text-sm text-gray-600">
                       <CalendarIcon className="h-[15px] w-auto" />
                       Prochaine échéance :
-                      <time dateTime={nextTask.dueDate.slice(0, 10)} aria-label={formatFullDate(nextTask.dueDate)}>
+                      <time
+                        dateTime={nextTask.dueDate.slice(0, 10)}
+                        aria-label={formatFullDate(nextTask.dueDate)}
+                      >
                         {formatShortDate(nextTask.dueDate)}
                       </time>
                       ({nextTask.title})
                     </p>
                   )}
-                  <ul className="flex flex-wrap gap-2" aria-label={`Tâches assignées dans ${project.name}`}>
+                  <ul
+                    className="flex flex-wrap gap-2"
+                    aria-label={`Tâches assignées dans ${project.name}`}
+                  >
                     {tasks.map((task) => (
-                      <li key={task.id} className="flex items-center gap-2 rounded-chip bg-gray-50 px-3 py-1 text-sm">
+                      <li
+                        key={task.id}
+                        className="flex items-center gap-2 rounded-chip bg-gray-50 px-3 py-1 text-sm"
+                      >
                         {task.title}
                         <StatusTag status={task.status} />
                       </li>

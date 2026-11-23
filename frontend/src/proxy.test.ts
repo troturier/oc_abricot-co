@@ -18,7 +18,9 @@ const location = (response: Response) => response.headers.get("location");
 describe("proxy (route protection)", () => {
   it("redirects anonymous visitors of protected pages to the login page", () => {
     const response = proxy(request("/projects/42?view=calendar"));
-    expect(location(response)).toBe("http://localhost:3001/login?from=%2Fprojects%2F42%3Fview%3Dcalendar");
+    expect(location(response)).toBe(
+      "http://localhost:3001/login?from=%2Fprojects%2F42%3Fview%3Dcalendar",
+    );
   });
 
   it("treats an expired token as no session", () => {

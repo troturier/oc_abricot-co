@@ -134,7 +134,10 @@ export function PeoplePicker({
           {selected.length > 0 && (
             <ul className="flex flex-wrap gap-2" aria-label="Collaborateurs sélectionnés">
               {selected.map((user) => (
-                <li key={user.id} className="flex items-center gap-1 rounded-full bg-gray-200 py-0.5 pr-1 pl-1 text-sm text-gray-600">
+                <li
+                  key={user.id}
+                  className="flex items-center gap-1 rounded-full bg-gray-200 py-0.5 pr-1 pl-1 text-sm text-gray-600"
+                >
                   <Avatar user={user} decorative className="size-5 text-[8px]" />
                   {getDisplayName(user)}
                   <button
@@ -158,7 +161,11 @@ export function PeoplePicker({
             aria-autocomplete="list"
             aria-expanded={expanded}
             aria-controls={listboxId}
-            aria-activedescendant={expanded && results[activeIndex] ? `${listboxId}-${results[activeIndex].id}` : undefined}
+            aria-activedescendant={
+              expanded && results[activeIndex]
+                ? `${listboxId}-${results[activeIndex].id}`
+                : undefined
+            }
             aria-invalid={error?.length ? true : undefined}
             aria-describedby={error?.length ? `${inputId}-error` : undefined}
             value={query}
@@ -203,7 +210,12 @@ export function PeoplePicker({
             </li>
           ))}
           {search && needle.length >= 2 && !results.length && (
-            <li role="option" aria-selected={false} aria-disabled="true" className="px-4 py-2 text-sm text-gray-600">
+            <li
+              role="option"
+              aria-selected={false}
+              aria-disabled="true"
+              className="px-4 py-2 text-sm text-gray-600"
+            >
               {loading ? "Recherche…" : "Aucun utilisateur trouvé"}
             </li>
           )}

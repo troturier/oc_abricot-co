@@ -21,7 +21,14 @@ interface ProjectTasksProps {
 }
 
 /** "Tâches" block of the project page: status filter, search, list or calendar view. */
-export function ProjectTasks({ projectId, tasks, people, currentUser, view, viewSwitcher }: ProjectTasksProps) {
+export function ProjectTasks({
+  projectId,
+  tasks,
+  people,
+  currentUser,
+  view,
+  viewSwitcher,
+}: ProjectTasksProps) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<TaskStatus | "ALL">("ALL");
   const [editedTask, setEditedTask] = useState<Task | null>(null);
@@ -31,7 +38,12 @@ export function ProjectTasks({ projectId, tasks, people, currentUser, view, view
   const visibleTasks = sortByUrgency(filterTasks(tasks, query, status));
 
   const renderCard = (task: Task) => (
-    <ProjectTaskCard task={task} projectId={projectId} currentUser={currentUser} onEdit={setEditedTask} />
+    <ProjectTaskCard
+      task={task}
+      projectId={projectId}
+      currentUser={currentUser}
+      onEdit={setEditedTask}
+    />
   );
 
   return (
@@ -76,7 +88,9 @@ export function ProjectTasks({ projectId, tasks, people, currentUser, view, view
 
       {!visibleTasks.length ? (
         <EmptyState>
-          {tasks.length ? "Aucune tâche ne correspond à ces critères." : "Ce projet ne contient encore aucune tâche."}
+          {tasks.length
+            ? "Aucune tâche ne correspond à ces critères."
+            : "Ce projet ne contient encore aucune tâche."}
         </EmptyState>
       ) : view === "list" ? (
         <ul className="flex flex-col gap-[17px] lg:px-[40px]">
@@ -102,7 +116,14 @@ export function ProjectTasks({ projectId, tasks, people, currentUser, view, view
         </ol>
       )}
 
-      {editedTask && <TaskFormModal projectId={projectId} people={people} task={editedTask} onClose={closeEdit} />}
+      {editedTask && (
+        <TaskFormModal
+          projectId={projectId}
+          people={people}
+          task={editedTask}
+          onClose={closeEdit}
+        />
+      )}
     </section>
   );
 }

@@ -30,7 +30,10 @@ export function KanbanBoard({ tasks, month }: { tasks: Task[]; month: string }) 
         >
           ‹
         </Link>
-        <h2 id="kanban-title" className="font-heading text-lg font-semibold text-ink-soft first-letter:uppercase">
+        <h2
+          id="kanban-title"
+          className="font-heading text-lg font-semibold text-ink-soft first-letter:uppercase"
+        >
           Tâches de {formatMonth(monthDate)}
         </h2>
         <Link
@@ -42,14 +45,17 @@ export function KanbanBoard({ tasks, month }: { tasks: Task[]; month: string }) 
           ›
         </Link>
       </div>
-      <div className="grid gap-[22px] lg:-mx-[30px] lg:grid-cols-3">
+      <div className="grid gap-[22px] lg:-mr-[55px] lg:-ml-[30px] lg:grid-cols-3">
         {COLUMNS.map(({ status, title }) => (
           <section
             key={status}
             aria-labelledby={`column-${status}`}
             className="flex flex-col gap-10 rounded-card border border-todo-bg bg-white px-6 py-10"
           >
-            <h3 id={`column-${status}`} className="flex items-center gap-2 font-heading text-lg font-semibold text-black">
+            <h3
+              id={`column-${status}`}
+              className="flex items-center gap-2 font-heading text-lg font-semibold text-black"
+            >
               {title}
               <span className="rounded-full bg-gray-200 px-4 py-0.5 font-sans text-sm font-normal text-gray-600">
                 <span className="sr-only">Nombre de tâches :</span>

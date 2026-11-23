@@ -25,7 +25,10 @@ interface ProjectFormModalProps {
 export function ProjectFormModal({ open, onClose, project, canDelete }: ProjectFormModalProps) {
   const router = useRouter();
   const action = project ? updateProject.bind(null, project.id) : createProject;
-  const [state, formAction, pending] = useActionState<ActionState, FormData>(action, INITIAL_ACTION_STATE);
+  const [state, formAction, pending] = useActionState<ActionState, FormData>(
+    action,
+    INITIAL_ACTION_STATE,
+  );
   const [deleting, startDelete] = useTransition();
   const [name, setName] = useState(project?.name ?? "");
   const [description, setDescription] = useState(project?.description ?? "");
@@ -38,11 +41,20 @@ export function ProjectFormModal({ open, onClose, project, canDelete }: ProjectF
     if (!project && state.id) router.push(`/projects/${state.id}`);
   }, [state, onClose, project, router]);
 
-  const contributors = project?.members.filter((member) => member.userId !== project.ownerId).map((member) => member.user) ?? [];
+  const contributors =
+    project?.members
+      .filter((member) => member.userId !== project.ownerId)
+      .map((member) => member.user) ?? [];
   const isValid = name.trim().length >= 2 && description.trim().length > 0;
 
   function handleDelete() {
-    if (!project || !window.confirm(`Supprimer définitivement le projet « ${project.name} » et toutes ses tâches ?`)) return;
+    if (
+      !project ||
+      !window.confirm(
+        `Supprimer définitivement le projet « ${project.name} » et toutes ses tâches ?`,
+      )
+    )
+      return;
     startDelete(async () => {
       const result = await deleteProject(project.id);
       if (result?.status === "error") toast.error(result.message);

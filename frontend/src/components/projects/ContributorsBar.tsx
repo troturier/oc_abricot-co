@@ -10,9 +10,14 @@ export function ContributorsBar({ owner, people }: { owner: User; people: User[]
       aria-labelledby="contributors-title"
       className="flex flex-wrap items-center justify-between gap-4 rounded-card bg-gray-100 px-6 py-5 sm:px-[50px]"
     >
-      <h2 id="contributors-title" className="flex items-baseline gap-2 font-heading text-lg font-semibold text-ink-soft">
+      <h2
+        id="contributors-title"
+        className="flex items-baseline gap-2 font-heading text-lg font-semibold text-ink-soft"
+      >
         Contributeurs
-        <span className="font-sans text-base font-normal text-gray-600">{pluralize(people.length, "personne")}</span>
+        <span className="font-sans text-base font-normal text-gray-600">
+          {pluralize(people.length, "personne")}
+        </span>
       </h2>
       <ul className="flex flex-wrap items-center gap-2">
         {people.map((user) => (

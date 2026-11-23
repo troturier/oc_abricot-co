@@ -6,14 +6,21 @@ import { alice, bob, carol } from "../../../../tests/helpers/fixtures";
 import { PeoplePicker } from "../PeoplePicker";
 
 function hiddenValues(container: HTMLElement, name: string) {
-  return [...container.querySelectorAll<HTMLInputElement>(`input[type=hidden][name=${name}]`)].map((input) => input.value);
+  return [...container.querySelectorAll<HTMLInputElement>(`input[type=hidden][name=${name}]`)].map(
+    (input) => input.value,
+  );
 }
 
 describe("PeoplePicker", () => {
   it("filters static options and selects with the keyboard", async () => {
     const user = userEvent.setup();
     const { container } = render(
-      <PeoplePicker label="Assigné à :" name="assigneeIds" valueKey="id" options={[alice, bob, carol]} />,
+      <PeoplePicker
+        label="Assigné à :"
+        name="assigneeIds"
+        valueKey="id"
+        options={[alice, bob, carol]}
+      />,
     );
     const combobox = screen.getByRole("combobox", { name: "Assigné à :" });
     await user.type(combobox, "bo");
@@ -28,7 +35,13 @@ describe("PeoplePicker", () => {
   it("removes a selected person", async () => {
     const user = userEvent.setup();
     const { container } = render(
-      <PeoplePicker label="Assigné à :" name="assigneeIds" valueKey="id" options={[alice, bob]} defaultSelected={[alice]} />,
+      <PeoplePicker
+        label="Assigné à :"
+        name="assigneeIds"
+        valueKey="id"
+        options={[alice, bob]}
+        defaultSelected={[alice]}
+      />,
     );
     await user.click(screen.getByRole("button", { name: "Retirer Alice Martin" }));
     expect(hiddenValues(container, "assigneeIds")).toEqual([]);
@@ -38,7 +51,12 @@ describe("PeoplePicker", () => {
     const user = userEvent.setup();
     const search = vi.fn().mockResolvedValue([carol]);
     const { container } = render(
-      <PeoplePicker label="Contributeurs" name="contributorEmails" valueKey="email" search={search} />,
+      <PeoplePicker
+        label="Contributeurs"
+        name="contributorEmails"
+        valueKey="email"
+        search={search}
+      />,
     );
     const combobox = screen.getByRole("combobox", { name: "Contributeurs" });
     await user.type(combobox, "c");

@@ -23,15 +23,18 @@ export function AccountForm({ user }: { user: User }) {
     currentPassword: "",
     newPassword: "",
   });
-  const [state, formAction, pending] = useActionState(async (previous: ActionState, formData: FormData) => {
-    const result = await updateAccount(previous, formData);
-    if (result.status === "success") {
-      toast.success(result.message);
-      // Never keep passwords in the form once saved.
-      setValues((current) => ({ ...current, currentPassword: "", newPassword: "" }));
-    }
-    return result;
-  }, INITIAL_ACTION_STATE);
+  const [state, formAction, pending] = useActionState(
+    async (previous: ActionState, formData: FormData) => {
+      const result = await updateAccount(previous, formData);
+      if (result.status === "success") {
+        toast.success(result.message);
+        // Never keep passwords in the form once saved.
+        setValues((current) => ({ ...current, currentPassword: "", newPassword: "" }));
+      }
+      return result;
+    },
+    INITIAL_ACTION_STATE,
+  );
   const errors = state.status === "error" ? state.fieldErrors : undefined;
 
   const bind = (name: keyof typeof values) => ({

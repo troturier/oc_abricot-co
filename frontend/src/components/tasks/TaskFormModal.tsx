@@ -25,8 +25,13 @@ interface TaskFormModalProps {
 
 /** Mockups "Modale création de tâche" and "Modale modifier une tâche". */
 export function TaskFormModal({ projectId, people, task, onClose }: TaskFormModalProps) {
-  const action = task ? updateTask.bind(null, projectId, task.id) : createTask.bind(null, projectId);
-  const [state, formAction, pending] = useActionState<ActionState, FormData>(action, INITIAL_ACTION_STATE);
+  const action = task
+    ? updateTask.bind(null, projectId, task.id)
+    : createTask.bind(null, projectId);
+  const [state, formAction, pending] = useActionState<ActionState, FormData>(
+    action,
+    INITIAL_ACTION_STATE,
+  );
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [dueDate, setDueDate] = useState(toDateInputValue(task?.dueDate ?? null));
@@ -43,7 +48,14 @@ export function TaskFormModal({ projectId, people, task, onClose }: TaskFormModa
     <Modal open onClose={onClose} title={task ? "Modifier" : "Créer une tâche"}>
       <form action={formAction} noValidate className="flex flex-col gap-10">
         <div className="flex flex-col gap-6">
-          <TextField label="Titre" name="title" required={!task} value={title} onChange={(event) => setTitle(event.target.value)} error={errors?.title} />
+          <TextField
+            label="Titre"
+            name="title"
+            required={!task}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            error={errors?.title}
+          />
           <TextAreaField
             label="Description"
             name="description"

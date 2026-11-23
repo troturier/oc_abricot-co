@@ -28,6 +28,15 @@ export default defineConfig({
           setupFiles: ["./tests/setup/integration.ts"],
         },
       },
+      {
+        extends: true,
+        test: {
+          name: "ai-eval",
+          environment: "node",
+          include: ["tests/ai-eval/**/*.test.ts"],
+          setupFiles: ["./tests/setup/ai-eval.ts"],
+        },
+      },
     ],
     coverage: {
       provider: "v8",

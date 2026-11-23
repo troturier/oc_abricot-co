@@ -5,7 +5,8 @@ import { createRateLimiter } from "./rate-limit";
 
 describe("parseGeneratedTasks", () => {
   it("reads a JSON answer, even wrapped in a code fence with prose", () => {
-    const answer = 'Voici :\n```json\n{"tasks":[{"title":"Créer la maquette","description":"Page d\'accueil","priority":"HIGH"}]}\n```';
+    const answer =
+      'Voici :\n```json\n{"tasks":[{"title":"Créer la maquette","description":"Page d\'accueil","priority":"HIGH"}]}\n```';
     expect(parseGeneratedTasks(answer)).toEqual([
       { title: "Créer la maquette", description: "Page d'accueil", priority: "HIGH" },
     ]);
@@ -30,7 +31,12 @@ describe("parseGeneratedTasks", () => {
   });
 
   it("flattens content parts returned by some models", () => {
-    expect(contentToText([{ type: "text", text: "{" }, { type: "text", text: "}" }])).toBe("{}");
+    expect(
+      contentToText([
+        { type: "text", text: "{" },
+        { type: "text", text: "}" },
+      ]),
+    ).toBe("{}");
     expect(contentToText(null)).toBe("");
   });
 });
@@ -45,7 +51,9 @@ describe("prompt", () => {
     const prompt = buildUserPrompt({
       projectName: "Boutique",
       projectDescription: "Site e-commerce",
-      similarTasks: [{ id: "1", title: "Créer le panier", description: "Ajout et retrait", status: "DONE" }],
+      similarTasks: [
+        { id: "1", title: "Créer le panier", description: "Ajout et retrait", status: "DONE" },
+      ],
       totalTasks: 12,
       request: "Gérer le paiement",
     });

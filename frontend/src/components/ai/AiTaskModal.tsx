@@ -15,7 +15,10 @@ interface DraftTask extends GeneratedTask {
 }
 
 let draftCounter = 0;
-const toDraft = (task: GeneratedTask): DraftTask => ({ ...task, key: `draft-${(draftCounter += 1)}` });
+const toDraft = (task: GeneratedTask): DraftTask => ({
+  ...task,
+  key: `draft-${(draftCounter += 1)}`,
+});
 
 /**
  * Mockups "Modale création de tâche IA" (empty) and "Modale liste de tâche IA".
@@ -44,14 +47,19 @@ export function AiTaskModal({ projectId, onClose }: { projectId: string; onClose
       // A new prompt adds tasks to the current proposal instead of replacing it.
       setDrafts((current) => {
         const titles = new Set(current.map((task) => task.title.toLowerCase()));
-        return [...current, ...result.tasks.filter((task) => !titles.has(task.title.toLowerCase())).map(toDraft)];
+        return [
+          ...current,
+          ...result.tasks.filter((task) => !titles.has(task.title.toLowerCase())).map(toDraft),
+        ];
       });
       setPrompt("");
     });
   }
 
   function updateDraft(key: string, changes: Partial<GeneratedTask>) {
-    setDrafts((current) => current.map((task) => (task.key === key ? { ...task, ...changes } : task)));
+    setDrafts((current) =>
+      current.map((task) => (task.key === key ? { ...task, ...changes } : task)),
+    );
   }
 
   function removeDraft(key: string) {
@@ -85,10 +93,20 @@ export function AiTaskModal({ projectId, onClose }: { projectId: string; onClose
   }
 
   return (
-    <Modal open onClose={onClose} title={drafts.length ? "Vos tâches..." : "Créer une tâche"} aiTitle className="sm:max-h-[calc(100dvh-4rem)]">
+    <Modal
+      open
+      onClose={onClose}
+      title={drafts.length ? "Vos tâches..." : "Créer une tâche"}
+      aiTitle
+      className="sm:max-h-[calc(100dvh-4rem)]"
+    >
       <div className="flex min-h-[200px] flex-col gap-6 sm:min-h-[420px]">
         <p className="sr-only" aria-live="polite">
-          {generating ? "Génération des tâches en cours…" : drafts.length ? `${drafts.length} tâche(s) proposée(s).` : ""}
+          {generating
+            ? "Génération des tâches en cours…"
+            : drafts.length
+              ? `${drafts.length} tâche(s) proposée(s).`
+              : ""}
         </p>
 
         {drafts.length > 0 && (
@@ -96,12 +114,20 @@ export function AiTaskModal({ projectId, onClose }: { projectId: string; onClose
             {drafts.map((task) => (
               <li key={task.key}>
                 {editingKey === task.key ? (
-                  <DraftEditor task={task} onChange={(changes) => updateDraft(task.key, changes)} onDone={() => setEditingKey(null)} />
+                  <DraftEditor
+                    task={task}
+                    onChange={(changes) => updateDraft(task.key, changes)}
+                    onDone={() => setEditingKey(null)}
+                  />
                 ) : (
                   <article className="flex flex-col gap-6 rounded-card border border-gray-200 px-6 py-[25px] sm:px-10">
                     <div className="flex flex-col gap-[7px]">
-                      <h3 className="font-heading text-lg font-semibold text-black">{task.title}</h3>
-                      {task.description && <p className="text-sm text-gray-500">{task.description}</p>}
+                      <h3 className="font-heading text-lg font-semibold text-black">
+                        {task.title}
+                      </h3>
+                      {task.description && (
+                        <p className="text-sm text-gray-500">{task.description}</p>
+                      )}
                     </div>
                     <div className="flex items-center gap-4 text-xs text-gray-600">
                       <button
@@ -130,7 +156,10 @@ export function AiTaskModal({ projectId, onClose }: { projectId: string; onClose
         )}
 
         {generating && (
-          <div role="status" className="flex items-center justify-center gap-3 py-6 text-sm text-gray-600">
+          <div
+            role="status"
+            className="flex items-center justify-center gap-3 py-6 text-sm text-gray-600"
+          >
             <SparkleIcon className="animate-spin text-sparkle [animation-duration:2s]" />
             Génération en cours, l&apos;IA analyse les tâches existantes du projet…
           </div>
@@ -138,8 +167,9 @@ export function AiTaskModal({ projectId, onClose }: { projectId: string; onClose
 
         {!drafts.length && !generating && (
           <p className="my-auto text-center text-sm text-gray-600">
-            Décrivez ce que vous voulez accomplir : l&apos;IA s&apos;appuie sur les tâches déjà présentes dans le projet pour
-            proposer des tâches complémentaires, que vous pourrez modifier avant de les ajouter.
+            Décrivez ce que vous voulez accomplir : l&apos;IA s&apos;appuie sur les tâches déjà
+            présentes dans le projet pour proposer des tâches complémentaires, que vous pourrez
+            modifier avant de les ajouter.
           </p>
         )}
 
@@ -161,7 +191,10 @@ export function AiTaskModal({ projectId, onClose }: { projectId: string; onClose
         )}
       </div>
 
-      <form onSubmit={handleGenerate} className="-mx-6 border-t border-gray-200 px-6 pt-8 sm:-mx-[73px] sm:px-[52px]">
+      <form
+        onSubmit={handleGenerate}
+        className="-mx-6 border-t border-gray-200 px-6 pt-8 sm:-mx-[73px] sm:px-[52px]"
+      >
         <label htmlFor={promptId} className="sr-only">
           Décrivez les tâches que vous souhaitez ajouter
         </label>
@@ -210,7 +243,13 @@ function DraftEditor({
         <label htmlFor={titleId} className="text-sm">
           Titre
         </label>
-        <input id={titleId} value={task.title} onChange={(event) => onChange({ title: event.target.value })} className={FIELD_CLASSES} autoFocus />
+        <input
+          id={titleId}
+          value={task.title}
+          onChange={(event) => onChange({ title: event.target.value })}
+          className={FIELD_CLASSES}
+          autoFocus
+        />
       </div>
       <div className="flex flex-col gap-[7px]">
         <label htmlFor={descriptionId} className="text-sm">
@@ -224,7 +263,12 @@ function DraftEditor({
           className={cn(FIELD_CLASSES, "resize-y")}
         />
       </div>
-      <Button size="sm" onClick={onDone} disabled={task.title.trim().length < 2} className="self-start">
+      <Button
+        size="sm"
+        onClick={onDone}
+        disabled={task.title.trim().length < 2}
+        className="self-start"
+      >
         Valider
       </Button>
     </div>

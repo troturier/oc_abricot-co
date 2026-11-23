@@ -86,7 +86,9 @@ test.describe.serial("projects and tasks", () => {
     await page.getByRole("link", { name: "Kanban" }).click();
     await expect(page).toHaveURL(/view=kanban/);
     const doneColumn = page.getByRole("region", { name: /Terminées/ });
-    await expect(doneColumn.getByRole("article", { name: "Rédiger le cahier de recette" })).toBeVisible();
+    await expect(
+      doneColumn.getByRole("article", { name: "Rédiger le cahier de recette" }),
+    ).toBeVisible();
 
     await page.getByRole("link", { name: "Projets", exact: true }).last().click();
     await expect(page.getByRole("heading", { name: projectName })).toBeVisible();

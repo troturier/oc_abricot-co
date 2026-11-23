@@ -13,7 +13,9 @@ test.describe("authentication", () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test("the session cookie is httpOnly and the token is never exposed to JavaScript", async ({ page }) => {
+  test("the session cookie is httpOnly and the token is never exposed to JavaScript", async ({
+    page,
+  }) => {
     await loginThroughForm(page, "alice@example.com");
     await expect(page).toHaveURL(/\/dashboard$/);
     const cookie = (await page.context().cookies()).find((item) => item.name === "abricot_session");

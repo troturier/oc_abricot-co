@@ -27,7 +27,10 @@ Règles :
 export function formatContextTasks(tasks: ContextTask[]) {
   if (!tasks.length) return "Aucune tâche existante pour le moment.";
   return tasks
-    .map((task) => `- [${task.status}] ${task.title}${task.description ? ` : ${task.description}` : ""}`)
+    .map(
+      (task) =>
+        `- [${task.status}] ${task.title}${task.description ? ` : ${task.description}` : ""}`,
+    )
     .join("\n");
 }
 

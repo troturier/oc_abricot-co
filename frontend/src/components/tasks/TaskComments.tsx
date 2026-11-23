@@ -59,7 +59,9 @@ export function TaskComments({
                 <Avatar user={comment.author} />
                 <div className="flex flex-1 flex-col gap-1 rounded-card bg-gray-100 px-[14px] py-[18px]">
                   <p className="flex flex-wrap justify-between gap-2 text-[10px] text-gray-600">
-                    <span className="font-semibold text-black">{getDisplayName(comment.author)}</span>
+                    <span className="font-semibold text-black">
+                      {getDisplayName(comment.author)}
+                    </span>
                     <time dateTime={comment.createdAt}>{formatCommentDate(comment.createdAt)}</time>
                   </p>
                   <p className="text-xs whitespace-pre-line text-black">{comment.content}</p>

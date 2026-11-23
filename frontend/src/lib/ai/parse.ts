@@ -5,10 +5,7 @@ import type { GeneratedTask } from "./types";
 const generatedTaskSchema = z.object({
   title: z.string().trim().min(2).max(200),
   description: z.string().trim().max(1000).default(""),
-  priority: z
-    .enum(["LOW", "MEDIUM", "HIGH", "URGENT"])
-    .catch("MEDIUM")
-    .default("MEDIUM"),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).catch("MEDIUM").default("MEDIUM"),
 });
 
 const responseSchema = z.object({

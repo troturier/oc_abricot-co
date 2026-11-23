@@ -32,7 +32,9 @@ describe("UI kit", () => {
   });
 
   it("TextField links its label, error message and invalid state", async () => {
-    const { container } = render(<TextField label="Email" name="email" required error={["Adresse email invalide."]} />);
+    const { container } = render(
+      <TextField label="Email" name="email" required error={["Adresse email invalide."]} />,
+    );
     const input = screen.getByLabelText(/Email/);
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveAccessibleDescription("Adresse email invalide.");
@@ -41,7 +43,10 @@ describe("UI kit", () => {
 
   it("ProgressBar exposes its value", () => {
     render(<ProgressBar value={66.6} label="Progression" />);
-    expect(screen.getByRole("progressbar", { name: "Progression" })).toHaveAttribute("aria-valuenow", "67");
+    expect(screen.getByRole("progressbar", { name: "Progression" })).toHaveAttribute(
+      "aria-valuenow",
+      "67",
+    );
   });
 
   it("Modal is labelled by its title and closes with its close button", async () => {

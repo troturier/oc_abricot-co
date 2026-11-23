@@ -34,7 +34,8 @@ export async function expectAccessible(page: Page, include?: string) {
   if (include) builder = builder.include(include);
   const { violations } = await builder.analyze();
   const summary = violations.map(
-    (violation) => `${violation.id}: ${violation.help} → ${violation.nodes.map((node) => node.target.join(" ")).join(", ")}`,
+    (violation) =>
+      `${violation.id}: ${violation.help} → ${violation.nodes.map((node) => node.target.join(" ")).join(", ")}`,
   );
   expect(summary, "Accessibility violations").toEqual([]);
 }

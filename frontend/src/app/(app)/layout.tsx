@@ -10,7 +10,10 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     <>
       <SkipLink />
       <Header user={user} />
-      <main id="main-content" className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-12 sm:px-8 lg:px-[100px] lg:pt-[92px] lg:pb-12">
+      <main
+        id="main-content"
+        className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-12 sm:px-8 lg:pt-[92px] lg:pr-[125px] lg:pb-12 lg:pl-[100px]"
+      >
         {children}
       </main>
       <Footer />

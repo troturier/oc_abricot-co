@@ -12,7 +12,11 @@ export function ok<T>(data: T, status = 200) {
 }
 
 /** Error backend envelope. */
-export function fail(status: number, message: string, errors?: { field: string; message: string }[]) {
+export function fail(
+  status: number,
+  message: string,
+  errors?: { field: string; message: string }[],
+) {
   return HttpResponse.json(
     { success: false, message, error: "ERROR", ...(errors ? { data: { errors } } : {}) },
     { status },

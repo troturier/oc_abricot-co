@@ -19,7 +19,10 @@ export function AssignedTaskList({ tasks }: { tasks: Task[] }) {
     >
       <div className="flex flex-wrap items-center justify-between gap-6">
         <div className="flex flex-col gap-2">
-          <h2 id="assigned-tasks-title" className="font-heading text-lg font-semibold text-ink-soft">
+          <h2
+            id="assigned-tasks-title"
+            className="font-heading text-lg font-semibold text-ink-soft"
+          >
             Mes tâches assignées
           </h2>
           <p className="text-base text-gray-500">Par ordre de priorité</p>
@@ -39,7 +42,9 @@ export function AssignedTaskList({ tasks }: { tasks: Task[] }) {
         </ul>
       ) : (
         <EmptyState>
-          {tasks.length ? "Aucune tâche ne correspond à votre recherche." : "Aucune tâche ne vous est assignée pour le moment."}
+          {tasks.length
+            ? "Aucune tâche ne correspond à votre recherche."
+            : "Aucune tâche ne vous est assignée pour le moment."}
         </EmptyState>
       )}
     </section>

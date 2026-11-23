@@ -36,16 +36,36 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
           label="Vues du tableau de bord"
           current={view}
           options={[
-            { value: "list", label: "Liste", href: "/dashboard?view=list", icon: <TaskCheckboxIcon /> },
-            { value: "kanban", label: "Kanban", href: "/dashboard?view=kanban", icon: <CalendarIcon className="h-4 w-auto" /> },
-            { value: "projects", label: "Projets", href: "/dashboard?view=projects", icon: <FolderSmallIcon /> },
+            {
+              value: "list",
+              label: "Liste",
+              href: "/dashboard?view=list",
+              icon: <TaskCheckboxIcon />,
+            },
+            {
+              value: "kanban",
+              label: "Kanban",
+              href: "/dashboard?view=kanban",
+              icon: <CalendarIcon className="h-4 w-auto" />,
+            },
+            {
+              value: "projects",
+              label: "Projets",
+              href: "/dashboard?view=projects",
+              icon: <FolderSmallIcon />,
+            },
           ]}
         />
         {view === "list" && <AssignedTaskList tasks={sortByUrgency(await fetchAssignedTasks())} />}
         {view === "kanban" && (
-          <KanbanBoard tasks={filterTasksOfMonth(await fetchAssignedTasks(), month)} month={month} />
+          <KanbanBoard
+            tasks={filterTasksOfMonth(await fetchAssignedTasks(), month)}
+            month={month}
+          />
         )}
-        {view === "projects" && <UrgentProjectsList projects={await fetchProjectsWithAssignedTasks()} />}
+        {view === "projects" && (
+          <UrgentProjectsList projects={await fetchProjectsWithAssignedTasks()} />
+        )}
       </div>
     </div>
   );

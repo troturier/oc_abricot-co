@@ -19,7 +19,10 @@ const suggestions = [
 describe("AiTaskModal", () => {
   beforeEach(() => {
     generateTasks.mockResolvedValue({ status: "success", tasks: suggestions, contextCount: 2 });
-    saveGeneratedTasks.mockResolvedValue({ status: "success", message: "1 tâche ajoutée au projet." });
+    saveGeneratedTasks.mockResolvedValue({
+      status: "success",
+      message: "1 tâche ajoutée au projet.",
+    });
   });
 
   it("generates, lets the user edit and delete, then saves the tasks", async () => {
@@ -28,15 +31,22 @@ describe("AiTaskModal", () => {
     render(<AiTaskModal projectId="p1" onClose={onClose} />);
 
     expect(screen.getByRole("dialog", { name: "Créer une tâche" })).toBeInTheDocument();
-    await user.type(screen.getByLabelText("Décrivez les tâches que vous souhaitez ajouter"), "Lancer une newsletter");
+    await user.type(
+      screen.getByLabelText("Décrivez les tâches que vous souhaitez ajouter"),
+      "Lancer une newsletter",
+    );
     await user.click(screen.getByRole("button", { name: "Générer les tâches avec l'IA" }));
 
     expect(generateTasks).toHaveBeenCalledWith("p1", "Lancer une newsletter");
     expect(await screen.findByRole("dialog", { name: "Vos tâches..." })).toBeInTheDocument();
     expect(screen.getAllByRole("article")).toHaveLength(2);
 
-    await user.click(screen.getByRole("button", { name: "Supprimer la tâche Créer le formulaire" }));
-    await user.click(screen.getByRole("button", { name: "Modifier la tâche Choisir l'outil d'emailing" }));
+    await user.click(
+      screen.getByRole("button", { name: "Supprimer la tâche Créer le formulaire" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Modifier la tâche Choisir l'outil d'emailing" }),
+    );
     const title = screen.getByLabelText("Titre");
     await user.clear(title);
     await user.type(title, "Choisir Brevo");
@@ -50,12 +60,34 @@ describe("AiTaskModal", () => {
   });
 
   it("shows the error returned by the server (quota, configuration…)", async () => {
-    generateTasks.mockResolvedValue({ status: "error", message: "Le quota du service d'IA est atteint." });
+    generateTasks.mockResolvedValue({
+      status: "error",
+      message: "Le quota du service d'IA est atteint.",
+    });
     const user = userEvent.setup();
     render(<AiTaskModal projectId="p1" onClose={vi.fn()} />);
-    await user.type(screen.getByLabelText("Décrivez les tâches que vous souhaitez ajouter"), "Lancer une newsletter");
+    await user.type(
+      screen.getByLabelText("Décrivez les tâches que vous souhaitez ajouter"),
+      "Lancer une newsletter",
+    );
     await user.keyboard("{Enter}");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Le quota du service d'IA est atteint.");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Le quota du service d'IA est atteint.",
+    );
+  });
+
+  it("shows a loading state and disables the prompt while the model answers", async () => {
+    let resolve: (value: unknown) => void = () => {};
+    generateTasks.mockReturnValue(new Promise((done) => (resolve = done)));
+    const user = userEvent.setup();
+    render(<AiTaskModal projectId="p1" onClose={vi.fn()} />);
+    const input = screen.getByLabelText("Décrivez les tâches que vous souhaitez ajouter");
+    await user.type(input, "Lancer une newsletter{Enter}");
+    expect(await screen.findByText(/Génération en cours/)).toBeInTheDocument();
+    expect(input).toBeDisabled();
+    resolve({ status: "success", tasks: suggestions, contextCount: 0 });
+    expect(await screen.findByRole("dialog", { name: "Vos tâches..." })).toBeInTheDocument();
+    expect(input).toBeEnabled();
   });
 
   it("is accessible", async () => {

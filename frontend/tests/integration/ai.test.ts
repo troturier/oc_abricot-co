@@ -8,21 +8,48 @@ import { API, fail, http, ok, server, signIn } from "../helpers/backend";
 import { alice, makeProject, makeTask } from "../helpers/fixtures";
 
 const existingTasks: ContextTask[] = [
-  { id: "1", title: "Intégrer le paiement Stripe", description: "Paiement par carte bancaire", status: "IN_PROGRESS" },
-  { id: "2", title: "Créer la page panier", description: "Liste des produits du panier", status: "DONE" },
-  { id: "3", title: "Rédiger les mentions légales", description: "Pages CGV et RGPD", status: "TODO" },
-  { id: "4", title: "Optimiser les images", description: "Compression et formats modernes", status: "TODO" },
+  {
+    id: "1",
+    title: "Intégrer le paiement Stripe",
+    description: "Paiement par carte bancaire",
+    status: "IN_PROGRESS",
+  },
+  {
+    id: "2",
+    title: "Créer la page panier",
+    description: "Liste des produits du panier",
+    status: "DONE",
+  },
+  {
+    id: "3",
+    title: "Rédiger les mentions légales",
+    description: "Pages CGV et RGPD",
+    status: "TODO",
+  },
+  {
+    id: "4",
+    title: "Optimiser les images",
+    description: "Compression et formats modernes",
+    status: "TODO",
+  },
 ];
 
 describe("RAG retrieval with LlamaIndex", () => {
   it("returns the existing tasks closest to the request", async () => {
-    const similar = await retrieveSimilarTasks(existingTasks, "paiement par carte et remboursement", new FakeEmbedding(), 2);
+    const similar = await retrieveSimilarTasks(
+      existingTasks,
+      "paiement par carte et remboursement",
+      new FakeEmbedding(),
+      2,
+    );
     expect(similar[0].id).toBe("1");
     expect(similar).toHaveLength(2);
   });
 
   it("does nothing for a project without tasks", async () => {
-    await expect(retrieveSimilarTasks([], "n'importe quoi", new FakeEmbedding())).resolves.toEqual([]);
+    await expect(retrieveSimilarTasks([], "n'importe quoi", new FakeEmbedding())).resolves.toEqual(
+      [],
+    );
   });
 
   it("caches embeddings between requests", async () => {
@@ -40,7 +67,10 @@ describe("generateTaskSuggestions", () => {
 
   it("augments the prompt with the retrieved tasks before generating", async () => {
     const chat = vi.fn<ChatModel["chat"]>().mockResolvedValue({
-      message: { content: '{"tasks":[{"title":"Gérer les remboursements","description":"Via Stripe","priority":"HIGH"}]}' },
+      message: {
+        content:
+          '{"tasks":[{"title":"Gérer les remboursements","description":"Via Stripe","priority":"HIGH"}]}',
+      },
     });
     const result = await generateTaskSuggestions({
       project,
@@ -49,7 +79,9 @@ describe("generateTaskSuggestions", () => {
       llm: { chat },
       embedModel: new FakeEmbedding(),
     });
-    expect(result.tasks).toEqual([{ title: "Gérer les remboursements", description: "Via Stripe", priority: "HIGH" }]);
+    expect(result.tasks).toEqual([
+      { title: "Gérer les remboursements", description: "Via Stripe", priority: "HIGH" },
+    ]);
     const [{ messages }] = chat.mock.calls[0];
     expect(messages[0].role).toBe("system");
     expect(messages[1].content).toContain("Intégrer le paiement Stripe");
@@ -61,15 +93,29 @@ describe("generateTaskSuggestions", () => {
       .fn<ChatModel["chat"]>()
       .mockResolvedValueOnce({ message: { content: "Désolé" } })
       .mockResolvedValueOnce({ message: { content: '{"tasks":[{"title":"Tâche valide"}]}' } });
-    const result = await generateTaskSuggestions({ project, existingTasks: [], request: "x", llm: { chat }, embedModel: new FakeEmbedding() });
+    const result = await generateTaskSuggestions({
+      project,
+      existingTasks: [],
+      request: "x",
+      llm: { chat },
+      embedModel: new FakeEmbedding(),
+    });
     expect(chat).toHaveBeenCalledTimes(2);
     expect(result.tasks[0].title).toBe("Tâche valide");
   });
 
   it("gives up with a clear message after two invalid answers", async () => {
-    const chat = vi.fn<ChatModel["chat"]>().mockResolvedValue({ message: { content: "pas de JSON" } });
+    const chat = vi
+      .fn<ChatModel["chat"]>()
+      .mockResolvedValue({ message: { content: "pas de JSON" } });
     await expect(
-      generateTaskSuggestions({ project, existingTasks: [], request: "x", llm: { chat }, embedModel: new FakeEmbedding() }),
+      generateTaskSuggestions({
+        project,
+        existingTasks: [],
+        request: "x",
+        llm: { chat },
+        embedModel: new FakeEmbedding(),
+      }),
     ).rejects.toMatchObject({ kind: "invalid-output" });
   });
 
@@ -79,13 +125,25 @@ describe("generateTaskSuggestions", () => {
     });
     const params = { project, existingTasks: [], request: "x", embedModel: new FakeEmbedding() };
     vi.spyOn(console, "error").mockImplementation(() => {});
-    await expect(generateTaskSuggestions({ ...params, llm: failing(429) })).rejects.toMatchObject({ kind: "quota" });
-    await expect(generateTaskSuggestions({ ...params, llm: failing(401) })).rejects.toMatchObject({ kind: "config" });
-    await expect(generateTaskSuggestions({ ...params, llm: failing(503) })).rejects.toMatchObject({ kind: "unavailable" });
+    await expect(generateTaskSuggestions({ ...params, llm: failing(429) })).rejects.toMatchObject({
+      kind: "quota",
+    });
+    await expect(generateTaskSuggestions({ ...params, llm: failing(401) })).rejects.toMatchObject({
+      kind: "config",
+    });
+    await expect(generateTaskSuggestions({ ...params, llm: failing(503) })).rejects.toMatchObject({
+      kind: "unavailable",
+    });
   });
 
   it("fake model used by the end-to-end tests returns 3 tasks", async () => {
-    const result = await generateTaskSuggestions({ project, existingTasks, request: "Newsletter", llm: fakeChatModel, embedModel: new FakeEmbedding() });
+    const result = await generateTaskSuggestions({
+      project,
+      existingTasks,
+      request: "Newsletter",
+      llm: fakeChatModel,
+      embedModel: new FakeEmbedding(),
+    });
     expect(result.tasks).toHaveLength(3);
   });
 });
@@ -104,7 +162,9 @@ describe("AI Server Actions", () => {
   function mockProject(status = 200) {
     server.use(
       http.get(`${API}/auth/profile`, () => ok({ user: alice })),
-      http.get(`${API}/projects/p1`, () => (status === 200 ? ok({ project: makeProject() }) : fail(status, "Accès refusé à ce projet"))),
+      http.get(`${API}/projects/p1`, () =>
+        status === 200 ? ok({ project: makeProject() }) : fail(status, "Accès refusé à ce projet"),
+      ),
       http.get(`${API}/projects/p1/tasks`, () => ok({ tasks: [makeTask()] })),
     );
   }
@@ -163,7 +223,9 @@ describe("AI Server Actions", () => {
 
   it("refuses an empty list or an untitled task", async () => {
     await expect(saveGeneratedTasks("p1", [])).resolves.toMatchObject({ status: "error" });
-    await expect(saveGeneratedTasks("p1", [{ title: " ", description: "", priority: "LOW" }])).resolves.toMatchObject({
+    await expect(
+      saveGeneratedTasks("p1", [{ title: " ", description: "", priority: "LOW" }]),
+    ).resolves.toMatchObject({
       status: "error",
     });
   });

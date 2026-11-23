@@ -25,7 +25,11 @@ const BASE_CLASSES =
   "inline-flex items-center justify-center gap-2.5 rounded-card whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:border-transparent disabled:bg-gray-200 disabled:text-gray-500";
 
 /** `className` must only add layout utilities (width, margin…), not override the variant. */
-export function buttonClasses(variant: ButtonVariant = "primary", size: ButtonSize = "md", className?: string) {
+export function buttonClasses(
+  variant: ButtonVariant = "primary",
+  size: ButtonSize = "md",
+  className?: string,
+) {
   return cn(BASE_CLASSES, SIZE_CLASSES[size], VARIANT_CLASSES[variant], className);
 }
 
@@ -34,7 +38,13 @@ interface ButtonProps extends ComponentProps<"button"> {
   size?: ButtonSize;
 }
 
-export function Button({ variant = "primary", size = "md", className, type = "button", ...props }: ButtonProps) {
+export function Button({
+  variant = "primary",
+  size = "md",
+  className,
+  type = "button",
+  ...props
+}: ButtonProps) {
   return <button type={type} className={buttonClasses(variant, size, className)} {...props} />;
 }
 
@@ -44,6 +54,11 @@ interface ButtonLinkProps extends ComponentProps<typeof Link> {
 }
 
 /** A link styled as a button (navigation, not an action). */
-export function ButtonLink({ variant = "primary", size = "md", className, ...props }: ButtonLinkProps) {
+export function ButtonLink({
+  variant = "primary",
+  size = "md",
+  className,
+  ...props
+}: ButtonLinkProps) {
   return <Link className={buttonClasses(variant, size, className)} {...props} />;
 }

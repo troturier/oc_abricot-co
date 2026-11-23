@@ -10,12 +10,14 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --project unit --project integration",
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
-    "test:watch": "vitest",
+    "test:watch": "vitest --project unit --project integration",
     "test:e2e": "playwright test",
-    "test:all": "npm run lint && npm run typecheck && npm run test && npm run test:e2e"
+    "test:all": "npm run lint && npm run typecheck && npm run test && npm run test:e2e",
+    "test:ai": "vitest run --project ai-eval",
+    "test:coverage": "vitest run --project unit --project integration --coverage"
   },
   "dependencies": {
     "@llamaindex/mistral": "^0.1.23",

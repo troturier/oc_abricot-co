@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Mes projets" };
 export default async function ProjectsPage() {
   const projects = await fetchProjectSummaries();
   return (
-    <div className="flex flex-col gap-16 lg:px-[37px]">
+    <div className="flex flex-col gap-16 lg:pr-[12px] lg:pl-[37px]">
       <PageHeader
         title="Mes projets"
         subtitle="Gérez vos projets"

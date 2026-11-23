@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { loginSchema, profileSchema, projectSchema, registerSchema, taskSchema, toFieldErrors } from "./validation";
+import {
+  loginSchema,
+  profileSchema,
+  projectSchema,
+  registerSchema,
+  taskSchema,
+  toFieldErrors,
+} from "./validation";
 
 describe("validation schemas", () => {
   it("requires a valid email and a password to log in", () => {
@@ -14,7 +21,9 @@ describe("validation schemas", () => {
 
   it("applies the backend password rule on registration", () => {
     expect(registerSchema.safeParse({ email: "a@b.fr", password: "password" }).success).toBe(false);
-    expect(registerSchema.safeParse({ email: "a@b.fr", password: "P@ssword123" }).success).toBe(true);
+    expect(registerSchema.safeParse({ email: "a@b.fr", password: "P@ssword123" }).success).toBe(
+      true,
+    );
   });
 
   it("requires the current password to set a new one", () => {
@@ -27,14 +36,33 @@ describe("validation schemas", () => {
 
   it("validates projects", () => {
     expect(projectSchema.safeParse({ name: "A", description: "x" }).success).toBe(false);
-    const parsed = projectSchema.parse({ name: " Site ", description: "Refonte", contributorEmails: ["bob@example.com"] });
-    expect(parsed).toEqual({ name: "Site", description: "Refonte", contributorEmails: ["bob@example.com"] });
+    const parsed = projectSchema.parse({
+      name: " Site ",
+      description: "Refonte",
+      contributorEmails: ["bob@example.com"],
+    });
+    expect(parsed).toEqual({
+      name: "Site",
+      description: "Refonte",
+      contributorEmails: ["bob@example.com"],
+    });
   });
 
   it("validates tasks and defaults the status to TODO", () => {
-    expect(taskSchema.safeParse({ title: "Tâche", description: "Desc", dueDate: "" }).success).toBe(false);
-    expect(taskSchema.safeParse({ title: "Tâche", description: "Desc", dueDate: "2026-03-09", status: "LATE" }).success).toBe(false);
-    expect(taskSchema.parse({ title: "Tâche", description: "Desc", dueDate: "2026-03-09" })).toMatchObject({
+    expect(taskSchema.safeParse({ title: "Tâche", description: "Desc", dueDate: "" }).success).toBe(
+      false,
+    );
+    expect(
+      taskSchema.safeParse({
+        title: "Tâche",
+        description: "Desc",
+        dueDate: "2026-03-09",
+        status: "LATE",
+      }).success,
+    ).toBe(false);
+    expect(
+      taskSchema.parse({ title: "Tâche", description: "Desc", dueDate: "2026-03-09" }),
+    ).toMatchObject({
       status: "TODO",
       assigneeIds: [],
     });

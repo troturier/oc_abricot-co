@@ -7,9 +7,15 @@ export const metadata: Metadata = { title: "Page introuvable" };
 /** 404 page (required by the self-assessment grid; not drawn in the mockup). */
 export default function NotFound() {
   return (
-    <main id="main-content" className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-20 text-center">
+    <main
+      id="main-content"
+      className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-20 text-center"
+    >
       <Logo className="w-[200px] text-brand" />
-      <p className="font-heading text-[96px] leading-none font-bold text-brand-strong" aria-hidden="true">
+      <p
+        className="font-heading text-[96px] leading-none font-bold text-brand-strong"
+        aria-hidden="true"
+      >
         404
       </p>
       <div className="flex flex-col gap-3">

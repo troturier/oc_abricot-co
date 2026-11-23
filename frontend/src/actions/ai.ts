@@ -30,21 +30,36 @@ const consumeGeneration = createRateLimiter(10, 60_000);
  * and its tasks are loaded with the user's token: a non-member gets a 403 from
  * the backend and cannot use the feature on that project.
  */
-export async function generateTasks(projectId: string, prompt: string): Promise<GenerateTasksResult> {
+export async function generateTasks(
+  projectId: string,
+  prompt: string,
+): Promise<GenerateTasksResult> {
   const parsedPrompt = promptSchema.safeParse(prompt);
-  if (!parsedPrompt.success) return { status: "error", message: parsedPrompt.error.issues[0].message };
+  if (!parsedPrompt.success)
+    return { status: "error", message: parsedPrompt.error.issues[0].message };
 
   const user = await requireUser();
   if (!consumeGeneration(user.id).allowed) {
-    return { status: "error", message: "Trop de demandes : patientez une minute avant de relancer l'IA." };
+    return {
+      status: "error",
+      message: "Trop de demandes : patientez une minute avant de relancer l'IA.",
+    };
   }
 
   try {
-    const [project, tasks] = await Promise.all([fetchProject(projectId), fetchProjectTasks(projectId)]);
+    const [project, tasks] = await Promise.all([
+      fetchProject(projectId),
+      fetchProjectTasks(projectId),
+    ]);
     const { llm, embedModel } = getAiModels();
     const result = await generateTaskSuggestions({
       project,
-      existingTasks: tasks.map(({ id, title, description, status }) => ({ id, title, description, status })),
+      existingTasks: tasks.map(({ id, title, description, status }) => ({
+        id,
+        title,
+        description,
+        status,
+      })),
       request: parsedPrompt.data,
       llm,
       embedModel,
@@ -61,11 +76,18 @@ export async function generateTasks(projectId: string, prompt: string): Promise<
 }
 
 const generatedTaskSchema = z.object({
-  title: z.string().trim().min(2, { error: "Chaque tâche doit avoir un titre (2 caractères minimum)." }).max(200),
+  title: z
+    .string()
+    .trim()
+    .min(2, { error: "Chaque tâche doit avoir un titre (2 caractères minimum)." })
+    .max(200),
   description: z.string().trim().max(1000),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
 });
-const generatedTasksSchema = z.array(generatedTaskSchema).min(1, { error: "Aucune tâche à ajouter." }).max(20);
+const generatedTasksSchema = z
+  .array(generatedTaskSchema)
+  .min(1, { error: "Aucune tâche à ajouter." })
+  .max(20);
 
 /**
  * Saves the tasks reviewed by the user: they are automatically attached to the
@@ -84,7 +106,11 @@ export async function saveGeneratedTasks(
     for (const task of parsed.data) {
       await authedRequest(`/projects/${encodeURIComponent(projectId)}/tasks`, {
         method: "POST",
-        body: { title: task.title, description: task.description || undefined, priority: task.priority },
+        body: {
+          title: task.title,
+          description: task.description || undefined,
+          priority: task.priority,
+        },
       });
       created += 1;
     }
@@ -101,5 +127,8 @@ export async function saveGeneratedTasks(
   revalidatePath(`/projects/${projectId}`);
   revalidatePath("/dashboard");
   revalidatePath("/projects");
-  return { status: "success", message: `${created} tâche${created > 1 ? "s" : ""} ajoutée${created > 1 ? "s" : ""} au projet.` };
+  return {
+    status: "success",
+    message: `${created} tâche${created > 1 ? "s" : ""} ajoutée${created > 1 ? "s" : ""} au projet.`,
+  };
 }

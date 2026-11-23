@@ -33,7 +33,14 @@ export function AuthShell({
         <div className="w-full max-w-[282px]">{footer}</div>
       </main>
       <div className="relative hidden flex-1 lg:block">
-        <Image src={image} alt="" fill priority sizes="(min-width: 1024px) calc(100vw - 562px), 0px" className="object-cover" />
+        <Image
+          src={image}
+          alt=""
+          fill
+          priority
+          sizes="(min-width: 1024px) calc(100vw - 562px), 0px"
+          className="object-cover"
+        />
       </div>
     </div>
   );

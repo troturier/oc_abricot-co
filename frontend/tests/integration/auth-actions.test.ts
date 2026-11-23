@@ -15,7 +15,10 @@ describe("auth Server Actions", () => {
     server.use(http.post(`${API}/auth/login`, () => ok({ user: { id: "u1" }, token })));
 
     await expect(
-      login(INITIAL_ACTION_STATE, form({ email: "alice@example.com", password: "P@ssword123", from: "/projects" })),
+      login(
+        INITIAL_ACTION_STATE,
+        form({ email: "alice@example.com", password: "P@ssword123", from: "/projects" }),
+      ),
     ).rejects.toMatchObject({ url: "/projects" });
 
     const cookie = cookieJar.get("abricot_session");
@@ -25,23 +28,36 @@ describe("auth Server Actions", () => {
   });
 
   it("ignores an external redirect target after login", async () => {
-    server.use(http.post(`${API}/auth/login`, () => ok({ user: { id: "u1" }, token: fakeToken() })));
+    server.use(
+      http.post(`${API}/auth/login`, () => ok({ user: { id: "u1" }, token: fakeToken() })),
+    );
     await expect(
-      login(INITIAL_ACTION_STATE, form({ email: "alice@example.com", password: "x", from: "https://evil.example" })),
+      login(
+        INITIAL_ACTION_STATE,
+        form({ email: "alice@example.com", password: "x", from: "https://evil.example" }),
+      ),
     ).rejects.toMatchObject({ url: "/dashboard" });
   });
 
   it("returns the backend message on wrong credentials, without creating a session", async () => {
     server.use(http.post(`${API}/auth/login`, () => fail(401, "Email ou mot de passe incorrect")));
-    const state = await login(INITIAL_ACTION_STATE, form({ email: "alice@example.com", password: "bad" }));
-    expect(state).toEqual({ status: "error", message: "Email ou mot de passe incorrect", fieldErrors: undefined });
+    const state = await login(
+      INITIAL_ACTION_STATE,
+      form({ email: "alice@example.com", password: "bad" }),
+    );
+    expect(state).toEqual({
+      status: "error",
+      message: "Email ou mot de passe incorrect",
+      fieldErrors: undefined,
+    });
     expect(cookieJar.get("abricot_session")).toBeUndefined();
   });
 
   it("validates the form before calling the backend", async () => {
     const state = await login(INITIAL_ACTION_STATE, form({ email: "", password: "" }));
     expect(state.status).toBe("error");
-    if (state.status === "error") expect(Object.keys(state.fieldErrors ?? {})).toEqual(["email", "password"]);
+    if (state.status === "error")
+      expect(Object.keys(state.fieldErrors ?? {})).toEqual(["email", "password"]);
   });
 
   it("registers a new account and opens a session", async () => {
@@ -60,9 +76,19 @@ describe("auth Server Actions", () => {
   });
 
   it("reports an already used email", async () => {
-    server.use(http.post(`${API}/auth/register`, () => fail(409, "Un utilisateur avec cet email existe déjà")));
-    const state = await register(INITIAL_ACTION_STATE, form({ email: "alice@example.com", password: "P@ssword123" }));
-    expect(state).toMatchObject({ status: "error", message: "Un utilisateur avec cet email existe déjà" });
+    server.use(
+      http.post(`${API}/auth/register`, () =>
+        fail(409, "Un utilisateur avec cet email existe déjà"),
+      ),
+    );
+    const state = await register(
+      INITIAL_ACTION_STATE,
+      form({ email: "alice@example.com", password: "P@ssword123" }),
+    );
+    expect(state).toMatchObject({
+      status: "error",
+      message: "Un utilisateur avec cet email existe déjà",
+    });
   });
 
   it("logs out by deleting the cookie", async () => {

@@ -12,7 +12,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
     <AuthShell
       title="Connexion"
       image="/images/login-background.png"
-      footer={<AuthSwitchLink text="Pas encore de compte ?" href="/register" label="Créer un compte" />}
+      footer={
+        <AuthSwitchLink text="Pas encore de compte ?" href="/register" label="Créer un compte" />
+      }
     >
       {session === "expired" && (
         <p role="status" className="rounded-input bg-progress-bg px-4 py-3 text-sm text-progress">

@@ -24,7 +24,8 @@ export class CachedEmbedding extends BaseEmbedding {
     const cached = this.cache.get(text);
     if (cached) return cached;
     const vector = await this.inner.getTextEmbedding(text);
-    if (this.cache.size >= this.maxEntries) this.cache.delete(this.cache.keys().next().value as string);
+    if (this.cache.size >= this.maxEntries)
+      this.cache.delete(this.cache.keys().next().value as string);
     this.cache.set(text, vector);
     return vector;
   }
@@ -41,11 +42,12 @@ export class FakeEmbedding extends BaseEmbedding {
 
   async getTextEmbedding(text: string) {
     const vector = new Array<number>(this.dimensions).fill(0);
-    const words = text
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .toLowerCase()
-      .match(/[a-z0-9]{3,}/g) ?? [];
+    const words =
+      text
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .toLowerCase()
+        .match(/[a-z0-9]{3,}/g) ?? [];
     for (const word of words) {
       let hash = 0;
       for (const char of word) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
@@ -58,15 +60,31 @@ export class FakeEmbedding extends BaseEmbedding {
 /** Deterministic chat model used by the automated tests (AI_PROVIDER=fake). */
 export const fakeChatModel: ChatModel = {
   async chat({ messages }) {
-    const request = messages.at(-1)?.content.match(/"""\n([\s\S]*?)\n"""/)?.[1]?.trim() ?? "la demande";
+    const request =
+      messages
+        .at(-1)
+        ?.content.match(/"""\n([\s\S]*?)\n"""/)?.[1]
+        ?.trim() ?? "la demande";
     const subject = request.slice(0, 60);
     return {
       message: {
         content: JSON.stringify({
           tasks: [
-            { title: `Analyser le besoin : ${subject}`, description: "Recenser les attentes et les contraintes.", priority: "HIGH" },
-            { title: `Réaliser : ${subject}`, description: "Développer la fonctionnalité demandée.", priority: "MEDIUM" },
-            { title: `Tester : ${subject}`, description: "Vérifier le bon fonctionnement et corriger les anomalies.", priority: "MEDIUM" },
+            {
+              title: `Analyser le besoin : ${subject}`,
+              description: "Recenser les attentes et les contraintes.",
+              priority: "HIGH",
+            },
+            {
+              title: `Réaliser : ${subject}`,
+              description: "Développer la fonctionnalité demandée.",
+              priority: "MEDIUM",
+            },
+            {
+              title: `Tester : ${subject}`,
+              description: "Vérifier le bon fonctionnement et corriger les anomalies.",
+              priority: "MEDIUM",
+            },
           ],
         }),
       },

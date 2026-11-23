@@ -10,7 +10,13 @@ function form(fields: Record<string, string>) {
   return data;
 }
 
-const unchanged = { firstName: "Alice", lastName: "Martin", email: alice.email, currentPassword: "", newPassword: "" };
+const unchanged = {
+  firstName: "Alice",
+  lastName: "Martin",
+  email: alice.email,
+  currentPassword: "",
+  newPassword: "",
+};
 
 describe("updateAccount", () => {
   it("joins first and last names and changes the password with the current one", async () => {
@@ -30,10 +36,18 @@ describe("updateAccount", () => {
 
     const state = await updateAccount(
       INITIAL_ACTION_STATE,
-      form({ ...unchanged, firstName: "Alicia", currentPassword: "P@ssword123", newPassword: "N3w@Password" }),
+      form({
+        ...unchanged,
+        firstName: "Alicia",
+        currentPassword: "P@ssword123",
+        newPassword: "N3w@Password",
+      }),
     );
 
-    expect(state).toEqual({ status: "success", message: "Informations et mot de passe mis à jour." });
+    expect(state).toEqual({
+      status: "success",
+      message: "Informations et mot de passe mis à jour.",
+    });
     expect(calls).toEqual([
       { path: "profile", body: { email: alice.email, name: "Alicia Martin" } },
       { path: "password", body: { currentPassword: "P@ssword123", newPassword: "N3w@Password" } },

@@ -5,7 +5,8 @@ import * as z from "zod";
 // the API call and shown next to the right field, in French.
 
 /** Same rule as the backend: 8+ characters with lowercase, uppercase, digit and special char. */
-export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+export const PASSWORD_PATTERN =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 export const PASSWORD_HINT =
   "8 caractères minimum, dont une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&).";
 

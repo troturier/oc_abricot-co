@@ -17,7 +17,10 @@ function form(fields: Record<string, string | string[]>) {
 function recordCalls() {
   const calls: string[] = [];
   server.events.on("request:start", async ({ request }) => {
-    const body = request.method === "GET" || request.method === "DELETE" ? "" : ` ${await request.clone().text()}`;
+    const body =
+      request.method === "GET" || request.method === "DELETE"
+        ? ""
+        : ` ${await request.clone().text()}`;
     calls.push(`${request.method} ${new URL(request.url).pathname}${body}`);
   });
   return calls;
@@ -57,7 +60,11 @@ describe("project Server Actions", () => {
     const state = await updateProject(
       "p1",
       INITIAL_ACTION_STATE,
-      form({ name: "API v2", description: "Nouvelle version", contributorEmails: [carol.email, alice.email] }),
+      form({
+        name: "API v2",
+        description: "Nouvelle version",
+        contributorEmails: [carol.email, alice.email],
+      }),
     );
     expect(state.status).toBe("success");
     expect(calls).toEqual([
@@ -72,11 +79,22 @@ describe("project Server Actions", () => {
   it("refuses the update for a non-administrator (backend 403)", async () => {
     signIn();
     server.use(
-      http.get(`${API}/projects/p1`, () => ok({ project: makeProject({ userRole: "CONTRIBUTOR" }) })),
-      http.put(`${API}/projects/p1`, () => fail(403, "Vous n'avez pas les droits pour modifier ce projet")),
+      http.get(`${API}/projects/p1`, () =>
+        ok({ project: makeProject({ userRole: "CONTRIBUTOR" }) }),
+      ),
+      http.put(`${API}/projects/p1`, () =>
+        fail(403, "Vous n'avez pas les droits pour modifier ce projet"),
+      ),
     );
-    const state = await updateProject("p1", INITIAL_ACTION_STATE, form({ name: "API v2", description: "x" }));
-    expect(state).toMatchObject({ status: "error", message: "Vous n'avez pas les droits pour modifier ce projet" });
+    const state = await updateProject(
+      "p1",
+      INITIAL_ACTION_STATE,
+      form({ name: "API v2", description: "x" }),
+    );
+    expect(state).toMatchObject({
+      status: "error",
+      message: "Vous n'avez pas les droits pour modifier ce projet",
+    });
   });
 
   it("deletes a project and goes back to the list", async () => {
@@ -111,7 +129,11 @@ describe("task Server Actions", () => {
       http.post(`${API}/projects/p1/tasks`, () => ok({ task: { id: "t1" } }, 201)),
       http.put(`${API}/projects/p1/tasks/t1`, () => ok({ task: { id: "t1" } })),
     );
-    const state = await createTask("p1", INITIAL_ACTION_STATE, form({ ...taskForm, status: "DONE" }));
+    const state = await createTask(
+      "p1",
+      INITIAL_ACTION_STATE,
+      form({ ...taskForm, status: "DONE" }),
+    );
     expect(state).toEqual({ status: "success", message: "Tâche créée.", id: "t1" });
     expect(calls).toEqual([
       `POST /projects/p1/tasks ${JSON.stringify({ title: "Maquettes", description: "Créer les maquettes", dueDate: "2026-03-09", assigneeIds: [bob.id] })}`,
@@ -142,21 +164,31 @@ describe("task Server Actions", () => {
       http.delete(`${API}/projects/p1/tasks/t1`, () => ok(undefined)),
       http.post(`${API}/projects/p1/tasks/t1/comments`, () => ok({ comment: { id: "c1" } }, 201)),
     );
-    await expect(updateTask("p1", "t1", INITIAL_ACTION_STATE, form({ ...taskForm, status: "IN_PROGRESS" }))).resolves.toMatchObject({
+    await expect(
+      updateTask("p1", "t1", INITIAL_ACTION_STATE, form({ ...taskForm, status: "IN_PROGRESS" })),
+    ).resolves.toMatchObject({
       status: "success",
     });
     await expect(deleteTask("p1", "t1")).resolves.toMatchObject({ status: "success" });
-    await expect(addComment("p1", "t1", INITIAL_ACTION_STATE, form({ content: "Bien vu" }))).resolves.toMatchObject({
+    await expect(
+      addComment("p1", "t1", INITIAL_ACTION_STATE, form({ content: "Bien vu" })),
+    ).resolves.toMatchObject({
       status: "success",
     });
-    await expect(addComment("p1", "t1", INITIAL_ACTION_STATE, form({ content: "  " }))).resolves.toMatchObject({
+    await expect(
+      addComment("p1", "t1", INITIAL_ACTION_STATE, form({ content: "  " })),
+    ).resolves.toMatchObject({
       status: "error",
     });
   });
 
   it("hides server errors behind a generic message", async () => {
     signIn();
-    server.use(http.delete(`${API}/projects/p1/tasks/t1`, () => fail(500, "SQLITE_BUSY: database is locked")));
+    server.use(
+      http.delete(`${API}/projects/p1/tasks/t1`, () =>
+        fail(500, "SQLITE_BUSY: database is locked"),
+      ),
+    );
     await expect(deleteTask("p1", "t1")).resolves.toEqual({
       status: "error",
       message: "La suppression de la tâche a échoué.",

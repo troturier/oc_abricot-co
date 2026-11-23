@@ -44,6 +44,8 @@ export async function updateAccount(_state: ActionState, formData: FormData): Pr
   revalidatePath("/", "layout");
   return {
     status: "success",
-    message: newPassword ? "Informations et mot de passe mis à jour." : "Informations mises à jour.",
+    message: newPassword
+      ? "Informations et mot de passe mis à jour."
+      : "Informations mises à jour.",
   };
 }

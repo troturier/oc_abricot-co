@@ -25,7 +25,13 @@ test.describe("accessibility (WCAG 2.1 AA, axe-core)", () => {
   test.describe("authenticated pages", () => {
     test.use({ storageState: STORAGE.alice });
 
-    for (const path of ["/dashboard", "/dashboard?view=kanban", "/dashboard?view=projects", "/projects", "/account"]) {
+    for (const path of [
+      "/dashboard",
+      "/dashboard?view=kanban",
+      "/dashboard?view=projects",
+      "/projects",
+      "/account",
+    ]) {
       test(`${path} has no violation`, async ({ page }) => {
         await page.goto(path);
         await expectAccessible(page);
@@ -60,7 +66,9 @@ test.describe("accessibility (WCAG 2.1 AA, axe-core)", () => {
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
       await expect(page.getByRole("link", { name: "Tableau de bord", exact: true })).toBeFocused();
-      await expect(page.getByRole("link", { name: "Tableau de bord", exact: true })).toHaveAttribute("aria-current", "page");
+      await expect(
+        page.getByRole("link", { name: "Tableau de bord", exact: true }),
+      ).toHaveAttribute("aria-current", "page");
     });
 
     test("the 404 page has no violation", async ({ page, consoleErrors }) => {
@@ -74,7 +82,9 @@ test.describe("accessibility (WCAG 2.1 AA, axe-core)", () => {
     test("every image has a text alternative", async ({ page }) => {
       for (const path of ["/dashboard", "/projects", "/account"]) {
         await page.goto(path);
-        const imagesWithoutAlt = await page.locator("img:not([alt]), svg[role=img]:not([aria-label])").count();
+        const imagesWithoutAlt = await page
+          .locator("img:not([alt]), svg[role=img]:not([aria-label])")
+          .count();
         expect(imagesWithoutAlt).toBe(0);
       }
     });

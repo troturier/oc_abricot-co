@@ -45,14 +45,21 @@ export function ProjectTaskCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 flex-col gap-[7px]">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 id={`task-${task.id}-title`} className="font-heading text-lg font-semibold text-black">
+            <h3
+              id={`task-${task.id}-title`}
+              className="font-heading text-lg font-semibold text-black"
+            >
               {task.title}
             </h3>
             <StatusTag status={task.status} />
           </div>
           {task.description && <p className="text-sm text-gray-500">{task.description}</p>}
         </div>
-        <TaskActionsMenu taskTitle={task.title} onEdit={() => onEdit(task)} onDelete={handleDelete} />
+        <TaskActionsMenu
+          taskTitle={task.title}
+          onEdit={() => onEdit(task)}
+          onDelete={handleDelete}
+        />
       </div>
       <dl className="flex flex-col gap-4 text-xs">
         <div className="flex items-center gap-2">
@@ -86,7 +93,12 @@ export function ProjectTaskCard({
           </dd>
         </div>
       </dl>
-      <TaskComments projectId={projectId} taskId={task.id} comments={task.comments} currentUser={currentUser} />
+      <TaskComments
+        projectId={projectId}
+        taskId={task.id}
+        comments={task.comments}
+        currentUser={currentUser}
+      />
     </article>
   );
 }

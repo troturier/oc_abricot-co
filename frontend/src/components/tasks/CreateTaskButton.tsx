@@ -10,9 +10,7 @@ export function CreateTaskButton({ projectId, people }: { projectId: string; peo
   const close = useCallback(() => setOpen(false), []);
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
-        Créer une tâche
-      </Button>
+      <Button onClick={() => setOpen(true)}>Créer une tâche</Button>
       {open && <TaskFormModal projectId={projectId} people={people} onClose={close} />}
     </>
   );

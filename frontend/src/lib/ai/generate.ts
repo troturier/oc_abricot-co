@@ -45,11 +45,17 @@ export async function generateTaskSuggestions({
     for (let attempt = 1; attempt <= 2; attempt += 1) {
       const response = await llm.chat({ messages });
       try {
-        return { tasks: parseGeneratedTasks(contentToText(response.message.content)), contextTasks };
+        return {
+          tasks: parseGeneratedTasks(contentToText(response.message.content)),
+          contextTasks,
+        };
       } catch (parseError) {
         if (attempt === 2) {
           console.error("Invalid AI output", parseError);
-          throw new AiError("invalid-output", "L'IA n'a pas renvoyé de tâches exploitables. Reformulez votre demande.");
+          throw new AiError(
+            "invalid-output",
+            "L'IA n'a pas renvoyé de tâches exploitables. Reformulez votre demande.",
+          );
         }
       }
     }

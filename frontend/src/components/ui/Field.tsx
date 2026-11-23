@@ -16,7 +16,15 @@ interface FieldShellProps {
 }
 
 /** Label, control, hint and error message wired together for assistive technologies. */
-export function FieldShell({ label, id, error, hint, required, children, className }: FieldShellProps) {
+export function FieldShell({
+  label,
+  id,
+  error,
+  hint,
+  required,
+  children,
+  className,
+}: FieldShellProps) {
   return (
     <div className={cn("flex flex-col gap-[7px]", className)}>
       <label htmlFor={id} className="text-sm text-black">
@@ -55,10 +63,25 @@ interface TextFieldProps extends Omit<ComponentProps<"input">, "id"> {
   trailingIcon?: ReactNode;
 }
 
-export function TextField({ label, error, hint, required, className, trailingIcon, ...props }: TextFieldProps) {
+export function TextField({
+  label,
+  error,
+  hint,
+  required,
+  className,
+  trailingIcon,
+  ...props
+}: TextFieldProps) {
   const id = useId();
   return (
-    <FieldShell label={label} id={id} error={error} hint={hint} required={required} className={className}>
+    <FieldShell
+      label={label}
+      id={id}
+      error={error}
+      hint={hint}
+      required={required}
+      className={className}
+    >
       <div className="relative">
         <input
           id={id}
@@ -84,10 +107,24 @@ interface TextAreaFieldProps extends Omit<ComponentProps<"textarea">, "id"> {
   hint?: string;
 }
 
-export function TextAreaField({ label, error, hint, required, className, ...props }: TextAreaFieldProps) {
+export function TextAreaField({
+  label,
+  error,
+  hint,
+  required,
+  className,
+  ...props
+}: TextAreaFieldProps) {
   const id = useId();
   return (
-    <FieldShell label={label} id={id} error={error} hint={hint} required={required} className={className}>
+    <FieldShell
+      label={label}
+      id={id}
+      error={error}
+      hint={hint}
+      required={required}
+      className={className}
+    >
       <textarea
         id={id}
         rows={2}

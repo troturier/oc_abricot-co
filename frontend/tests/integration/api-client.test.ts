@@ -11,7 +11,9 @@ describe("apiRequest", () => {
         return ok({ user: { id: "u1" } });
       }),
     );
-    await expect(apiRequest("/auth/profile", { token: "abc" })).resolves.toEqual({ user: { id: "u1" } });
+    await expect(apiRequest("/auth/profile", { token: "abc" })).resolves.toEqual({
+      user: { id: "u1" },
+    });
     expect(authorization).toBe("Bearer abc");
   });
 
@@ -21,7 +23,9 @@ describe("apiRequest", () => {
         fail(400, "Données invalides", [{ field: "name", message: "Le nom est requis" }]),
       ),
     );
-    const error = (await apiRequest("/projects", { method: "POST", body: {} }).catch((e) => e)) as ApiError;
+    const error = (await apiRequest("/projects", { method: "POST", body: {} }).catch(
+      (e) => e,
+    )) as ApiError;
     expect(error).toBeInstanceOf(ApiError);
     expect(error).toMatchObject({ status: 400, message: "Données invalides" });
     expect(error.fieldErrors).toEqual([{ field: "name", message: "Le nom est requis" }]);

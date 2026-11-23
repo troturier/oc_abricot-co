@@ -28,7 +28,12 @@ export async function retrieveSimilarTasks(
   const byId = new Map(indexed.map((task) => [task.id, task]));
 
   const documents = indexed.map(
-    (task) => new Document({ id_: task.id, text: taskToText(task), metadata: { taskId: task.id, status: task.status } }),
+    (task) =>
+      new Document({
+        id_: task.id,
+        text: taskToText(task),
+        metadata: { taskId: task.id, status: task.status },
+      }),
   );
 
   return Settings.withEmbedModel(embedModel, async () => {

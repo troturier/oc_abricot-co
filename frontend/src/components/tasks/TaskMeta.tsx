@@ -18,7 +18,10 @@ export function TaskMeta({ task }: { task: Task }) {
       <li className="flex items-center gap-2">
         <CalendarIcon className="h-[15px] w-auto text-gray-500" />
         {task.dueDate ? (
-          <time dateTime={task.dueDate.slice(0, 10)} aria-label={`Échéance : ${formatFullDate(task.dueDate)}`}>
+          <time
+            dateTime={task.dueDate.slice(0, 10)}
+            aria-label={`Échéance : ${formatFullDate(task.dueDate)}`}
+          >
             {formatShortDate(task.dueDate)}
           </time>
         ) : (
@@ -28,7 +31,9 @@ export function TaskMeta({ task }: { task: Task }) {
       {separator}
       <li className="flex items-center gap-2">
         <CommentIcon className="text-gray-500" />
-        <span aria-label={pluralize(task.comments.length, "commentaire")}>{task.comments.length}</span>
+        <span aria-label={pluralize(task.comments.length, "commentaire")}>
+          {task.comments.length}
+        </span>
       </li>
     </ul>
   );

@@ -59,7 +59,10 @@ export function Modal({ open, onClose, title, aiTitle, children, footer, classNa
           >
             <CloseIcon />
           </button>
-          <h2 id={titleId} className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-ink-soft">
+          <h2
+            id={titleId}
+            className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-ink-soft"
+          >
             {aiTitle && <SparkleIcon className="text-sparkle" />}
             {title}
           </h2>

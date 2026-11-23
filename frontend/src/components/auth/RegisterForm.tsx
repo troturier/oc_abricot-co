@@ -18,7 +18,16 @@ export function RegisterForm() {
   return (
     <form action={formAction} noValidate className="flex w-full flex-col items-center gap-[29px]">
       <div className="flex w-full flex-col gap-[29px]">
-        <TextField label="Email" name="email" type="email" autoComplete="email" aria-required="true" value={email} onChange={(event) => setEmail(event.target.value)} error={errors?.email} />
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          aria-required="true"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          error={errors?.email}
+        />
         <TextField
           label="Mot de passe"
           name="password"

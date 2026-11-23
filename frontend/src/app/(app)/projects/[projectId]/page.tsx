@@ -23,13 +23,18 @@ async function loadProject(projectId: string) {
   }
 }
 
-export async function generateMetadata({ params }: PageProps<"/projects/[projectId]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/projects/[projectId]">): Promise<Metadata> {
   const { projectId } = await params;
   const [project] = await loadProject(projectId);
   return { title: project.name };
 }
 
-export default async function ProjectPage({ params, searchParams }: PageProps<"/projects/[projectId]">) {
+export default async function ProjectPage({
+  params,
+  searchParams,
+}: PageProps<"/projects/[projectId]">) {
   const { projectId } = await params;
   const { view } = await searchParams;
   const [[project, tasks], user] = await Promise.all([loadProject(projectId), requireUser()]);
@@ -37,8 +42,9 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
   const currentView = view === "calendar" ? "calendar" : "list";
 
   return (
-    <div className="flex flex-col gap-10 lg:-mx-[56px]">
-      <div className="flex flex-wrap items-start justify-between gap-6">
+    <div className="flex flex-col gap-10">
+      {/* Mockup: back button at x=44, the rest of the page from x=112 to x=1327. */}
+      <div className="flex flex-wrap items-start justify-between gap-6 lg:-mr-[12px] lg:-ml-[56px]">
         <div className="flex gap-4">
           <Link
             href="/projects"
@@ -51,7 +57,11 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
             <div className="flex flex-wrap items-baseline gap-4">
               <h1 className="font-heading text-2xl font-semibold text-ink-soft">{project.name}</h1>
               {canEditProject(project) && (
-                <ProjectModalButton project={project} canDelete={project.ownerId === user.id} appearance="link">
+                <ProjectModalButton
+                  project={project}
+                  canDelete={project.ownerId === user.id}
+                  appearance="link"
+                >
                   Modifier<span className="sr-only"> le projet</span>
                 </ProjectModalButton>
               )}
@@ -65,30 +75,37 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
         </div>
       </div>
 
-      <ContributorsBar owner={project.owner} people={people} />
+      <div className="flex flex-col gap-10 lg:-mr-[12px] lg:ml-[12px]">
+        <ContributorsBar owner={project.owner} people={people} />
 
-      <ProjectTasks
-        projectId={project.id}
-        tasks={tasks}
-        people={people}
-        currentUser={user}
-        view={currentView}
-        viewSwitcher={
-          <ViewSwitcher
-            label="Vues des tâches"
-            current={currentView}
-            options={[
-              { value: "list", label: "Liste", href: `/projects/${project.id}`, icon: <TaskCheckboxIcon /> },
-              {
-                value: "calendar",
-                label: "Calendrier",
-                href: `/projects/${project.id}?view=calendar`,
-                icon: <CalendarIcon className="h-4 w-auto" />,
-              },
-            ]}
-          />
-        }
-      />
+        <ProjectTasks
+          projectId={project.id}
+          tasks={tasks}
+          people={people}
+          currentUser={user}
+          view={currentView}
+          viewSwitcher={
+            <ViewSwitcher
+              label="Vues des tâches"
+              current={currentView}
+              options={[
+                {
+                  value: "list",
+                  label: "Liste",
+                  href: `/projects/${project.id}`,
+                  icon: <TaskCheckboxIcon />,
+                },
+                {
+                  value: "calendar",
+                  label: "Calendrier",
+                  href: `/projects/${project.id}?view=calendar`,
+                  icon: <CalendarIcon className="h-4 w-auto" />,
+                },
+              ]}
+            />
+          }
+        />
+      </div>
     </div>
   );
 }

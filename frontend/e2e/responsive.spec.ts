@@ -18,10 +18,18 @@ test.describe("responsive (mobile viewport)", () => {
     test.use({ storageState: STORAGE.alice });
 
     test("no horizontal scroll and the navigation stays usable", async ({ page }) => {
-      for (const path of ["/dashboard", "/dashboard?view=kanban", "/dashboard?view=projects", "/projects", "/account"]) {
+      for (const path of [
+        "/dashboard",
+        "/dashboard?view=kanban",
+        "/dashboard?view=projects",
+        "/projects",
+        "/account",
+      ]) {
         await page.goto(path);
         expect(await hasHorizontalOverflow(page), path).toBe(false);
-        await expect(page.getByRole("link", { name: "Projets", exact: true }).first()).toBeVisible();
+        await expect(
+          page.getByRole("link", { name: "Projets", exact: true }).first(),
+        ).toBeVisible();
       }
       await page.goto("/projects");
       await page.getByRole("link", { name: "Application E-commerce" }).click();
