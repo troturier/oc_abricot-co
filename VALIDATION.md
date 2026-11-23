@@ -5,7 +5,7 @@ done, and how to re-run the checks. Every automated check can be replayed at any
 regressions (see [Re-running everything](#re-running-everything)).
 
 Last full run: **2026-11-23** — lint ✅, typecheck ✅, Prettier ✅, 91 unit/integration tests ✅,
-27 end-to-end tests ✅, AI quality evaluation with the real Mistral model ✅ (3/3), WAVE ✅ (0 error).
+28 end-to-end tests ✅, AI quality evaluation with the real Mistral model ✅ (3/3), WAVE ✅ (0 error).
 
 Legend: ✅ verified · ⏳ pending · ⚠️ deviation, explained.
 
@@ -64,7 +64,7 @@ and a fresh build.
 | `npm run format:check`   | Prettier                                                                                                                                                                           | ~3 s              |
 | `npm test`               | 91 Vitest tests: `unit` project (jsdom) + `integration` project (Node, MSW-mocked backend)                                                                                         | ~3 s              |
 | `npm run test:coverage`  | Same with V8 coverage report in `coverage/`                                                                                                                                        | ~5 s              |
-| `npm run test:e2e`       | 27 Playwright tests: starts the **real backend** on a fresh seeded SQLite database (`backend/prisma/e2e.sqlite`, port 8010) and a **production build** of the frontend (port 3010) | ~1 min with build |
+| `npm run test:e2e`       | 28 Playwright tests: starts the **real backend** on a fresh seeded SQLite database (`backend/prisma/e2e.sqlite`, port 8010) and a **production build** of the frontend (port 3010) | ~1 min with build |
 | `npm run test:ai`        | Prompt quality evaluation on the **real Mistral API** (skipped without `MISTRAL_API_KEY`)                                                                                          | ~30 s             |
 
 The end-to-end tests never touch the development database and can run while `npm run dev` is up (different ports).
@@ -212,22 +212,23 @@ Design:
 
 ### Features
 
-| Feature (functional spec)                                                                             | Check                                                                                                  | Result |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------ |
-| Create a project (name, description, contributors by autocomplete); the creator becomes administrator | e2e `projects-tasks.spec.ts`, integration                                                              | ✅     |
-| Edit a project and add/remove contributors (administrators only)                                      | e2e (admin edits, contributor sees no "Modifier"), integration (diff add/remove, backend 403 surfaced) | ✅     |
-| Delete a project (owner)                                                                              | integration                                                                                            | ✅     |
-| Projects overview with progression, team, owner                                                       | screenshot review + e2e a11y                                                                           | ✅     |
-| Non-member cannot open a project (404)                                                                | e2e (Caroline on Alice's project)                                                                      | ✅     |
-| Create a task (title, description, due date, assignees, status)                                       | e2e + integration (status applied after creation)                                                      | ✅     |
-| Edit a task, change its status                                                                        | e2e                                                                                                    | ✅     |
-| Delete a task (with confirmation)                                                                     | e2e                                                                                                    | ✅     |
-| Comments on tasks                                                                                     | e2e (add, counter updated), integration (empty comment refused)                                        | ✅     |
-| Dashboard — list of assigned tasks, most urgent first, search                                         | e2e + unit `tasks.test.ts`                                                                             | ✅     |
-| Dashboard — kanban of the tasks of the month by status                                                | e2e (task due this month in the right column) + unit                                                   | ✅     |
-| Dashboard — projects with assigned tasks, most urgent first                                           | e2e + unit                                                                                             | ✅     |
-| Project page — list of all tasks, status filter, search, calendar view                                | e2e + unit (`filterTasks`, `groupTasksByDueDate`)                                                      | ✅     |
-| Loading, empty and error states                                                                       | component tests + manual review                                                                        | ✅     |
+| Feature (functional spec)                                                                                                                    | Check                                                                                                  | Result |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------ |
+| Create a project (name, description, contributors by autocomplete); the creator becomes administrator                                        | e2e `projects-tasks.spec.ts`, integration                                                              | ✅     |
+| Edit a project and add/remove contributors (administrators only)                                                                             | e2e (admin edits, contributor sees no "Modifier"), integration (diff add/remove, backend 403 surfaced) | ✅     |
+| Delete a project (owner)                                                                                                                     | integration                                                                                            | ✅     |
+| Projects overview with progression, team, owner                                                                                              | screenshot review + e2e a11y                                                                           | ✅     |
+| Non-member cannot open a project (404)                                                                                                       | e2e (Caroline on Alice's project)                                                                      | ✅     |
+| Create a task (title, description, due date, assignees, status)                                                                              | e2e + integration (status applied after creation)                                                      | ✅     |
+| Edit a task, change its status                                                                                                               | e2e                                                                                                    | ✅     |
+| Delete a task (with confirmation)                                                                                                            | e2e                                                                                                    | ✅     |
+| Comments on tasks                                                                                                                            | e2e (add, counter updated), integration (empty comment refused)                                        | ✅     |
+| Dashboard — list of assigned tasks, most urgent first, search                                                                                | e2e + unit `tasks.test.ts`                                                                             | ✅     |
+| Dashboard — kanban of the tasks of the month by status                                                                                       | e2e (task due this month in the right column) + unit                                                   | ✅     |
+| Dashboard — projects with assigned tasks, most urgent first                                                                                  | e2e + unit                                                                                             | ✅     |
+| Project page — list of all tasks, status filter, search, calendar view                                                                       | e2e + unit (`filterTasks`, `groupTasksByDueDate`)                                                      | ✅     |
+| Project page header — a long description wraps; the « Créer une tâche » / « IA » buttons stay on the title row (desktop), below it on mobile | e2e `projects-tasks.spec.ts` (fails on the previous layout: buttons pushed under the title)            | ✅     |
+| Loading, empty and error states                                                                                                              | component tests + manual review                                                                        | ✅     |
 
 ### Fidelity to the mockup
 
@@ -270,7 +271,7 @@ project page back button at x=44), cards, tags, chips, modals (598 px, padding 7
 
 | Check                                                                                               | Result   |
 | --------------------------------------------------------------------------------------------------- | -------- |
-| Every end-to-end test fails if the browser logs a console error or throws (fixture `consoleErrors`) | ✅ 27/27 |
+| Every end-to-end test fails if the browser logs a console error or throws (fixture `consoleErrors`) | ✅ 28/28 |
 
 ---
 

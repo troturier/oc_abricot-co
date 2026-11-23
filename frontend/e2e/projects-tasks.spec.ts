@@ -43,6 +43,33 @@ test.describe.serial("projects and tasks", () => {
     await expect(page.getByText("Description modifiée")).toBeVisible();
   });
 
+  test("a long description wraps without pushing the action buttons below the title", async ({
+    page,
+  }) => {
+    const longDescription =
+      `Description modifiée : ${"refonte complète du parcours d'achat ".repeat(8)}`.trim();
+    await page.goto(projectUrl);
+    await page.getByRole("button", { name: "Modifier le projet" }).click();
+    const dialog = page.getByRole("dialog", { name: "Modifier un projet" });
+    await dialog.getByLabel("Description").fill(longDescription);
+    await dialog.getByRole("button", { name: "Enregistrer" }).click();
+    await expect(dialog).toBeHidden();
+
+    const title = await page.getByRole("heading", { level: 1 }).boundingBox();
+    const description = await page.getByText(longDescription).boundingBox();
+    const createButton = await page.getByRole("button", { name: "Créer une tâche" }).boundingBox();
+    const aiButton = await page.getByRole("button", { name: /^IA/ }).boundingBox();
+    if (!title || !description || !createButton || !aiButton)
+      throw new Error("Header not rendered");
+
+    // The description wraps on several lines…
+    expect(description.height).toBeGreaterThan(40);
+    // …while both buttons stay on the first row, to the right of the text.
+    expect(createButton.y).toBeLessThan(title.y + title.height);
+    expect(aiButton.y).toBe(createButton.y);
+    expect(createButton.x).toBeGreaterThan(description.x + description.width);
+  });
+
   test("a member creates, edits, comments and finds a task on the dashboard", async ({ page }) => {
     await page.goto(projectUrl);
     await page.getByRole("button", { name: "Créer une tâche" }).click();

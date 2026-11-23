@@ -44,8 +44,10 @@ export default async function ProjectPage({
   return (
     <div className="flex flex-col gap-10">
       {/* Mockup: back button at x=44, the rest of the page from x=112 to x=1327. */}
-      <div className="flex flex-wrap items-start justify-between gap-6 lg:-mr-[12px] lg:-ml-[56px]">
-        <div className="flex gap-4">
+      {/* The title block takes the remaining width and wraps its text, so that a long
+          description never pushes the buttons to a new line (stacked on mobile only). */}
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between lg:-mr-[12px] lg:-ml-[56px]">
+        <div className="flex min-w-0 flex-1 gap-4">
           <Link
             href="/projects"
             aria-label="Retour aux projets"
@@ -53,9 +55,11 @@ export default async function ProjectPage({
           >
             <ArrowLeftIcon />
           </Link>
-          <div className="flex flex-col gap-[17px]">
+          <div className="flex min-w-0 flex-col gap-[17px]">
             <div className="flex flex-wrap items-baseline gap-4">
-              <h1 className="font-heading text-2xl font-semibold text-ink-soft">{project.name}</h1>
+              <h1 className="font-heading text-2xl font-semibold break-words text-ink-soft">
+                {project.name}
+              </h1>
               {canEditProject(project) && (
                 <ProjectModalButton
                   project={project}
@@ -66,10 +70,12 @@ export default async function ProjectPage({
                 </ProjectModalButton>
               )}
             </div>
-            {project.description && <p className="text-lg text-gray-600">{project.description}</p>}
+            {project.description && (
+              <p className="text-lg break-words text-gray-600">{project.description}</p>
+            )}
           </div>
         </div>
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex shrink-0 flex-wrap gap-2.5 sm:flex-nowrap">
           <CreateTaskButton projectId={project.id} people={people} />
           <AiTaskButton projectId={project.id} />
         </div>
